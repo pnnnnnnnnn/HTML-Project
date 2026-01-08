@@ -1,0 +1,152 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* 讓內容由上往下排：Header -> Content -> Footer */
+}
+
+/* 假設你外層的 div 沒有 class，可以幫它加一個，例如 class="main-content" */
+.main-content {
+    flex: 1 0 auto; /* 這是讓 Footer 到底部的核心 */
+    display: flex;  /* 確保裡面的 sidebar 和 main 橫向排列 */
+}
+
+/* 導覽列排版 */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+}
+
+.nav-links a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #333;
+}
+
+/* 右側會員區塊 */
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.auth-buttons a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 14px;
+}
+
+.cart-icon {
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* 商品區塊排版 */
+.product-container {
+    /* 移除 flex: 1，改用 min-height */
+    min-height: 500px; 
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px 5%;
+}
+.product-card {
+    border: 1px solid #181212;
+    padding: 15px;
+    margin: 3px;
+    text-align: center;
+    height: 250px;
+}
+
+.product-img {
+    height: 150px;
+    background: #f0f0f0;
+    margin-bottom: 10px;
+}
+
+footer {
+    flex-shrink: 0;      /* 確保不被壓縮 */
+    background: #333;
+    color: white;
+    padding: 15px 0;     /* 上下 15px，左右 0 */
+    text-align: center;
+    width: 100%;
+    font-size: 14px;     /* 稍微縮小字體會讓比例看起來更精緻 */
+    line-height: 1;      /* 確保行高不會撐開高度 */
+}
+
+footer p {
+    margin: 0;           /* 記得把 p 標籤預設的上下邊距改為 0 */
+}
+
+/* 購物車背景遮罩 */
+.cart-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px; /* 寬度 */
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto; /* 如果商品很多可以捲動 */
+}
+
+/* 購物車內的清單樣式 */
+#cart-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+#cart-items-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: #555;
+    font-size: 16px;
+    display: block;
+    padding: 5px 0;
+    transition: 0.3s; /* 讓變色平滑一點 */
+}
+
+.sidebar ul li a:hover {
+    color: #007bff; /* 滑鼠移上去變藍色 */
+    padding-left: 5px; /* 稍微往右縮一點的動態感 */
+}
+
+.quantity-controls button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-weight: bold;
+}
+
+.cart-item-info {
+    flex: 1;
+    font-size: 15px;
+}
