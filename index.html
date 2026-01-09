@@ -24,9 +24,7 @@
 
         <div class="user-controls">
             <div class="auth-buttons">
-                <a href="#" class="login-btn">登入</a>
-                <span class="divider">|</span>
-                <a href="#" class="register-btn">註冊</a>
+                <a href="#" class="login-register-btn">登入/註冊</a>
             </div>
             <div class="cart-icon" onclick="openCart()" style="cursor: pointer;">
                 🛒 <span class="cart-count">0</span>
@@ -38,21 +36,22 @@
         <h1 id="category-title">新品上市</h1>
     </section>
 
-<div class="main-content" style="display: flex; padding: 20px 1%; gap: 20px;">
-    <aside class="sidebar" style="width: 5%; min-width: 120px; background: #f9f9f9; padding: 20px; border-radius: 8px;">
-        <h3 style="margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #333;">商品分類</h3>
-        <ul style="list-style: none; padding: 0;">
-            <li><a href="#all" onclick="filterCategory('全部')">所有商品</a></li>
-            <li><a href="#tops" onclick="filterCategory('上衣')">男裝上衣</a></li>
-            <li><a href="#pants" onclick="filterCategory('褲子')">休閒長褲</a></li>
-            <li><a href="#outerwear" onclick="filterCategory('外套')">防風外套</a></li>
-            <li><a href="#accessories" onclick="filterCategory('配件')">潮流配件</a></li>
-        </ul>
-    </aside>
+    <div class="main-content" style="display: flex; padding: 20px 1%; gap: 20px;">
+        <aside class="sidebar"
+            style="width: 5%; min-width: 120px; background: #f9f9f9; padding: 20px; border-radius: 8px;">
+            <h3 style="margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #333;">商品分類</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li><a href="#all" onclick="filterCategory('全部')">所有商品</a></li>
+                <li><a href="#tops" onclick="filterCategory('上衣')">男裝上衣</a></li>
+                <li><a href="#pants" onclick="filterCategory('褲子')">休閒長褲</a></li>
+                <li><a href="#outerwear" onclick="filterCategory('外套')">防風外套</a></li>
+                <li><a href="#accessories" onclick="filterCategory('配件')">潮流配件</a></li>
+            </ul>
+        </aside>
 
-    <main class="product-container" id="product-list" style="flex: 1;">
-    </main>
-</div>
+        <main class="product-container" id="product-list" style="flex: 1;">
+        </main>
+    </div>
     <footer>
         <p>&copy; 2026 我的購物商城 版權所有</p>
     </footer>
@@ -70,8 +69,37 @@
             <button onclick="alert('訂單已送出！')">前往結帳</button>
         </div>
     </div>
-    <script src="JavaScript.js"></script>
+    <script type="module" src="JavaScript.js"></script>
+    <!-- 登入/註冊彈出視窗 -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
 
+            <h2 id="modalTitle">會員登入</h2>
+
+            <form id="authForm">
+                <div id="userInfoFields" style="display: none; margin-bottom: 10px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="userName" placeholder="姓名" style="flex: 2; margin: 0;">
+                        <select id="userGender"
+                            style="flex: 1; border-radius: 5px; border: 1px solid #ddd; padding: 10px;">
+                            <option value="小姐">小姐</option>
+                            <option value="先生">先生</option>
+                        </select>
+                    </div>
+                </div>
+
+                <input type="email" id="authEmail" placeholder="電子信箱" required>
+                <input type="password" id="authPassword" placeholder="密碼" required>
+                <button type="submit" id="mainAuthBtn" class="auth-submit">登入</button>
+            </form>
+
+            <div class="auth-switch">
+                <span id="switchHint">還沒有帳號？</span>
+                <button id="switchModeBtn">帳號申請</button>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

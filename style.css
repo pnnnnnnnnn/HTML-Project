@@ -92,16 +92,15 @@ footer p {
 
 /* 購物車背景遮罩 */
 .cart-modal {
+    display: none; /* 預設隱藏 */
     position: fixed;
     top: 0;
     right: 0;
-    width: 300px; /* 寬度 */
+    width: 300px;
     height: 100%;
     background: white;
+    z-index: 1050; /* 比導覽列高 */
     box-shadow: -2px 0 10px rgba(0,0,0,0.2);
-    z-index: 1000;
-    padding: 20px;
-    overflow-y: auto; /* 如果商品很多可以捲動 */
 }
 
 /* 購物車內的清單樣式 */
@@ -149,4 +148,53 @@ footer p {
 .cart-item-info {
     flex: 1;
     font-size: 15px;
+}
+
+/* 彈出視窗美化 156-192列 */
+/* 彈窗背景 */
+.modal {
+    display: none; /* 預設隱藏 */
+    position: fixed;
+    z-index: 2000; /* 最高的層級，確保蓋住購物車 */
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+/* 視窗本體 */
+.modal-content {
+    background: white;
+    margin: 10% auto;
+    padding: 30px;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+    position: relative;
+}
+
+/* 關閉按鈕 */
+.close-btn {
+    position: absolute;
+    right: 15px; top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+
+
+#userGender {
+    background-color: white;
+    cursor: pointer;
+    font-size: 14px;
+    height: 46px; /* 配合你 input 的高度 */
+    margin: 10px 0;
+}
+
+#authForm input, #userGender {
+    width: 100%;
+    margin: 8px 0; /* 統一間距 */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box; /* 確保寬度包含 padding */
 }

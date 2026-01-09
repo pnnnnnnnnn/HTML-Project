@@ -1,23 +1,40 @@
+
+
+// 1. Firebase 初始化
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// 注意：如果你是用 Vite 開發，保留 import.meta.env；如果是直接開檔案，請換成真實字串
+const firebaseConfig = {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 2. 商品資料
 const products = [
     { name: "經典款衛衣", price: 999, categories: ["全部", "上衣"] },
-    { name: "保暖羽絨衣", price: 2500, categories: ["全部", "外套", "熱門"] }, // 它同時屬於三類
+    { name: "保暖羽絨衣", price: 2500, categories: ["全部", "外套", "熱門"] },
     { name: "潮流棒球帽", price: 500, categories: ["全部", "配件", "熱門"] }
 ];
 
-function filterCategory(targetName) {
-    // 1. 更新 Hero 區塊的標題文字
-    const title = document.getElementById('category-title');
-    if (title) {
-        title.innerText = (targetName === '全部') ? '新品上市' : targetName;
-    }
+let cart = [];
 
-    // 2. 清空目前的商品列表
+// 3. 所有功能函數 (Function)
+function filterCategory(targetName) {
+    const title = document.getElementById('category-title');
+    if (title) title.innerText = (targetName === '全部') ? '新品上市' : targetName;
+
     const container = document.getElementById('product-list');
     container.innerHTML = '';
 
-    // 3. 根據標籤篩選並重新畫出商品
-    // 修改 filterCategory 裡的迴圈部分
-    products.forEach((item, originalIndex) => { // 使用 originalIndex 確保對應原始陣列
+    products.forEach((item, originalIndex) => {
         if (item.categories.includes(targetName)) {
             container.innerHTML += `
             <div class="product-card">
@@ -25,34 +42,25 @@ function filterCategory(targetName) {
                 <h3>${item.name}</h3>
                 <p>$ ${item.price}</p>
                 <button class="add-to-cart" onclick="addToCart(${originalIndex})">加入購物車</button>
-            </div>
-        `;
+            </div>`;
         }
     });
 }
 
-let cart = [];
-
 function addToCart(index) {
     const product = products[index];
-    
-    // 檢查購物車內是否已經有這個商品
     const existingItem = cart.find(item => item.name === product.name);
-    
     if (existingItem) {
-        existingItem.quantity += 1; // 如果有，數量 +1
+        existingItem.quantity += 1;
     } else {
-        // 如果沒有，把商品複製一份並加上數量屬性
         cart.push({ ...product, quantity: 1 });
     }
-    
     updateCartUI();
     renderCart();
 }
 
-// 修正 3：讓購物車「開」跟「關」的功能動起來
 function openCart() {
-    renderCart(); // 加上這行，確保開起時內容是最新的
+    renderCart();
     document.getElementById('cart-modal').style.display = 'block';
 }
 
@@ -60,7 +68,6 @@ function closeCart() {
     document.getElementById('cart-modal').style.display = 'none';
 }
 
-// 修正 4：把商品名稱印在購物車的小視窗裡
 function renderCart() {
     const cartList = document.getElementById('cart-items-list');
     const totalDisplay = document.getElementById('cart-total');
@@ -74,13 +81,10 @@ function renderCart() {
     }
 
     cart.forEach((item, index) => {
-        const li = document.createElement('li');
-        li.className = "d-flex justify-content-between align-items-center py-2 border-bottom";
-
-        // 計算該項目的總額
         const itemTotal = item.price * item.quantity;
         totalPrice += itemTotal;
-
+        const li = document.createElement('li');
+        li.className = "d-flex justify-content-between align-items-center py-2 border-bottom";
         li.innerHTML = `
             <div class="cart-item-info">
                 <span>${item.name} - $${item.price}</span>
@@ -90,41 +94,82 @@ function renderCart() {
                 <span style="min-width: 20px; text-align: center;">${item.quantity}</span>
                 <button onclick="changeQuantity(${index}, 1)" class="btn btn-sm btn-outline-secondary">+</button>
                 <button onclick="removeFromCart(${index})" class="btn btn-sm btn-danger ms-2">刪除</button>
-            </div>
-        `;
+            </div>`;
         cartList.appendChild(li);
     });
-
     totalDisplay.innerText = `總計：$ ${totalPrice}`;
 }
 
-function removeFromCart(index) {
-    // 根據索引刪除陣列中的一筆資料
-    cart.splice(index, 1);
+function changeQuantity(index, delta) {
+    cart[index].quantity += delta;
+    if (cart[index].quantity < 1) {
+        removeFromCart(index);
+    } else {
+        updateCartUI();
+        renderCart();
+    }
+}
 
-    // 刪除後必須重新執行 UI 更新與清單渲染
+function removeFromCart(index) {
+    cart.splice(index, 1);
     updateCartUI();
     renderCart();
 }
 
-function changeQuantity(index, delta) {
-    // delta 為 1 或 -1
-    cart[index].quantity += delta;
-
-    // 如果數量小於 1，就直接移除該商品，或限制最小為 1
-    if (cart[index].quantity < 1) {
-        removeFromCart(index);
-    } else {
-        updateCartUI(); // 更新購物車圖示上的總數 (如果你想顯示總件數的話)
-        renderCart();   // 重新渲染清單
-    }
-}
-
-// 修正 updateCartUI 讓它顯示「件數總和」而非「類別總和」
 function updateCartUI() {
     const cartCount = document.querySelector('.cart-count');
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     cartCount.innerText = totalItems;
 }
 
+// 4. 會員彈窗邏輯 (直接在 JS 綁定，不用 window)
+const authModal = document.getElementById("authModal");
+const loginRegBtn = document.querySelector(".login-register-btn");
+const closeBtn = document.querySelector(".close-btn");
+const switchModeBtn = document.getElementById("switchModeBtn");
+let isLoginMode = true;
+
+loginRegBtn.onclick = (e) => {
+    e.preventDefault();
+    authModal.style.display = "block";
+};
+
+closeBtn.onclick = () => authModal.style.display = "none";
+
+// 在 JavaScript.js 找到 switchModeBtn.onclick 的地方修改
+switchModeBtn.onclick = () => {
+    isLoginMode = !isLoginMode;
+    
+    // 1. 取得新欄位的容器
+    const userInfoFields = document.getElementById("userInfoFields");
+    const userNameInput = document.getElementById("userName");
+
+    // 2. 根據模式切換顯示/隱藏
+    if (isLoginMode) {
+        // 登入模式：隱藏姓名格、標題換成登入
+        userInfoFields.style.display = "none";
+        userNameInput.required = false; // 登入不需要姓名
+        document.getElementById("modalTitle").innerText = "會員登入";
+        document.getElementById("mainAuthBtn").innerText = "登入";
+        document.getElementById("switchHint").innerText = "還沒有帳號？";
+        switchModeBtn.innerText = "帳號申請";
+    } else {
+        // 註冊模式：顯示姓名格、標題換成註冊
+        userInfoFields.style.display = "block";
+        userNameInput.required = true; // 註冊必須填姓名
+        document.getElementById("modalTitle").innerText = "帳號申請";
+        document.getElementById("mainAuthBtn").innerText = "立即註冊";
+        document.getElementById("switchHint").innerText = "已經有帳號了？";
+        switchModeBtn.innerText = "返回登入";
+    }
+};
+// ✨ 5. 【最核心修復】：將 HTML onclick 需要的函數掛載到全域 window
+window.filterCategory = filterCategory;
+window.addToCart = addToCart;
+window.openCart = openCart;
+window.closeCart = closeCart;
+window.changeQuantity = changeQuantity;
+window.removeFromCart = removeFromCart;
+
+// 6. 初始化執行
 filterCategory('全部');
