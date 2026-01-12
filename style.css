@@ -1,19 +1,28 @@
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
 
-html, body {
+html,
+body {
     height: 100%;
     margin: 0;
 }
 
 body {
     display: flex;
-    flex-direction: column; /* 讓內容由上往下排：Header -> Content -> Footer */
+    flex-direction: column;
+    /* 讓內容由上往下排：Header -> Content -> Footer */
 }
 
 /* 假設你外層的 div 沒有 class，可以幫它加一個，例如 class="main-content" */
 .main-content {
-    flex: 1 0 auto; /* 這是讓 Footer 到底部的核心 */
-    display: flex;  /* 確保裡面的 sidebar 和 main 橫向排列 */
+    flex: 1 0 auto;
+    /* 這是讓 Footer 到底部的核心 */
+    display: flex;
+    /* 確保裡面的 sidebar 和 main 橫向排列 */
 }
 
 /* 導覽列排版 */
@@ -23,7 +32,7 @@ body {
     align-items: center;
     padding: 1rem 5%;
     background: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
 }
@@ -55,52 +64,63 @@ body {
 /* 商品區塊排版 */
 .product-container {
     /* 移除 flex: 1，改用 min-height */
-    min-height: 500px; 
+    min-height: 500px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
     padding: 20px 5%;
 }
-.product-card {
-    border: 1px solid #181212;
-    padding: 15px;
-    margin: 3px;
-    text-align: center;
-    height: 250px;
-}
 
-.product-img {
-    height: 150px;
-    background: #f0f0f0;
-    margin-bottom: 10px;
+.product-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    /* 減少內距讓空間更緊湊 */
+    margin: 5px;
+    text-align: center;
+    background: #fff;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    /* 移除固定高度，讓內容決定長度 */
+    gap: 8px;
+    /* 統一控制內容物之間的間距，讓留白變少 */
 }
 
 footer {
-    flex-shrink: 0;      /* 確保不被壓縮 */
+    flex-shrink: 0;
+    /* 確保不被壓縮 */
     background: #333;
     color: white;
-    padding: 15px 0;     /* 上下 15px，左右 0 */
+    padding: 15px 0;
+    /* 上下 15px，左右 0 */
     text-align: center;
     width: 100%;
-    font-size: 14px;     /* 稍微縮小字體會讓比例看起來更精緻 */
-    line-height: 1;      /* 確保行高不會撐開高度 */
+    font-size: 14px;
+    /* 稍微縮小字體會讓比例看起來更精緻 */
+    line-height: 1;
+    /* 確保行高不會撐開高度 */
 }
 
 footer p {
-    margin: 0;           /* 記得把 p 標籤預設的上下邊距改為 0 */
+    margin: 0;
+    /* 記得把 p 標籤預設的上下邊距改為 0 */
 }
 
 /* 購物車背景遮罩 */
 .cart-modal {
-    display: none; /* 預設隱藏 */
+    display: none;
+    /* 預設隱藏 */
     position: fixed;
     top: 0;
     right: 0;
     width: 300px;
     height: 100%;
     background: white;
-    z-index: 1050; /* 比導覽列高 */
-    box-shadow: -2px 0 10px rgba(0,0,0,0.2);
+    z-index: 1050;
+    /* 比導覽列高 */
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+
 }
 
 /* 購物車內的清單樣式 */
@@ -116,49 +136,56 @@ footer p {
     font-size: 16px;
 }
 
-.sidebar ul li {
-    margin-bottom: 10px;
+/* 修改後的側邊欄 CSS */
+.sidebar {
+    flex: 0 0 130px;
+    /* 固定寬度 200px，不隨比例縮放 */
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    height: fit-content;
+    /* 根據內容決定高度 */
+    /* --- 加入以下代碼讓它固定 --- */
+    position: sticky;
+    /* 設定為黏性定位 */
+    top: 100px;
+    /* 距離視窗頂部多少距離時固定（建議避開 Header 高度） */
+    height: fit-content;
+    /* 高度隨內容調整，不可設為 100% 否則無法滑動 */
+    align-self: flex-start;
+    /* 確保在 Flex 容器中靠上對齊，sticky 才會生效 */
 }
 
+/* 確保側邊欄連結不換行 */
 .sidebar ul li a {
-    text-decoration: none;
-    color: #555;
-    font-size: 16px;
+    white-space: nowrap;
+    /* 強制文字不換行 */
     display: block;
-    padding: 5px 0;
-    transition: 0.3s; /* 讓變色平滑一點 */
+    padding: 8px 0;
+    text-decoration: none;
+    color: #333;
 }
 
 .sidebar ul li a:hover {
-    color: #007bff; /* 滑鼠移上去變藍色 */
-    padding-left: 5px; /* 稍微往右縮一點的動態感 */
-}
-
-.quantity-controls button {
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    font-weight: bold;
-}
-
-.cart-item-info {
-    flex: 1;
-    font-size: 15px;
+    color: #007bff;
+    /* 滑鼠移上去變藍色 */
+    padding-left: 5px;
+    /* 稍微往右縮一點的動態感 */
 }
 
 /* 彈出視窗美化 156-192列 */
 /* 彈窗背景 */
 .modal {
-    display: none; /* 預設隱藏 */
+    display: none;
+    /* 預設隱藏 */
     position: fixed;
-    z-index: 2000; /* 最高的層級，確保蓋住購物車 */
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    z-index: 2000;
+    /* 最高的層級，確保蓋住購物車 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 /* 視窗本體 */
@@ -175,7 +202,8 @@ footer p {
 /* 關閉按鈕 */
 .close-btn {
     position: absolute;
-    right: 15px; top: 10px;
+    right: 15px;
+    top: 10px;
     font-size: 28px;
     cursor: pointer;
 }
@@ -186,15 +214,90 @@ footer p {
     background-color: white;
     cursor: pointer;
     font-size: 14px;
-    height: 46px; /* 配合你 input 的高度 */
+    height: 46px;
+    /* 配合你 input 的高度 */
     margin: 10px 0;
 }
 
-#authForm input, #userGender {
+#authForm input,
+#userGender {
     width: 100%;
-    margin: 8px 0; /* 統一間距 */
+    margin: 8px 0;
+    /* 統一間距 */
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    box-sizing: border-box; /* 確保寬度包含 padding */
+    box-sizing: border-box;
+    /* 確保寬度包含 padding */
+}
+
+.swal2-container {
+    z-index: 3000 !important;
+}
+
+/* 關鍵修正：縮小商品名稱字體 */
+.product-card h3 {
+    font-size: 0.9rem;
+    margin: 5px 0;
+    /* 縮小標題上下邊距 */
+    line-height: 1.2;
+    /* 保持兩行縮略，防止長短不一 */
+    height: 2.4em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-card p {
+    font-size: 1rem;
+    color: #d9534f;
+    font-weight: bold;
+    margin: 2px 0;
+    /* 價格上下幾乎不留邊距 */
+}
+
+/* 按鈕縮小一點 */
+.add-to-cart {
+    padding: 8px 0;
+    /* 按鈕高度稍微縮減 */
+    font-size: 0.85rem;
+    margin-top: 5px;
+    /* 與價格保持一點點距離即可 */
+}
+
+/* 原價：灰色 + 劃線 */
+.old-price {
+    text-decoration: line-through;
+    color: #a0a0a0;
+    font-size: 0.85rem;
+    margin-right: 8px;
+}
+
+/* 特價：紅色 + 加粗 */
+.new-price {
+    color: #e63946;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* 讓價格區域整齊排列 */
+.product-price {
+    margin: 8px 0;
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+}
+
+.hot-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff4d4d;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
 }
