@@ -9,6 +9,7 @@ html,
 body {
     height: 100%;
     margin: 0;
+    padding-top: 30px;
 }
 
 body {
@@ -19,10 +20,10 @@ body {
 
 /* 假設你外層的 div 沒有 class，可以幫它加一個，例如 class="main-content" */
 .main-content {
+    margin-top: 30px;
+    /* 數值約等於 Navbar 的高度 */
     flex: 1 0 auto;
-    /* 這是讓 Footer 到底部的核心 */
     display: flex;
-    /* 確保裡面的 sidebar 和 main 橫向排列 */
 }
 
 /* 導覽列排版 */
@@ -33,8 +34,14 @@ body {
     padding: 1rem 5%;
     background: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: sticky;
+
+    /* --- 改用固定定位 --- */
+    position: fixed;
     top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2000;
+    /* 設定極高層級，蓋過所有內容 */
 }
 
 .nav-links a {
@@ -53,7 +60,7 @@ body {
 .auth-buttons a {
     text-decoration: none;
     color: #007bff;
-    font-size: 14px;
+    font-size: 20px;
 }
 
 .cart-icon {
@@ -256,14 +263,36 @@ footer p {
     margin: 2px 0;
     /* 價格上下幾乎不留邊距 */
 }
-
+/* 266~296都是按鈕控制 */
 /* 按鈕縮小一點 */
 .add-to-cart {
     padding: 8px 0;
-    /* 按鈕高度稍微縮減 */
     font-size: 0.85rem;
     margin-top: 5px;
-    /* 與價格保持一點點距離即可 */
+
+    /* --- 加入下面這一行來移除黑邊框 --- */
+    border: none;
+    /* 深灰色背景 */
+    color: white;
+    /* 白色文字 */
+    border-radius: 4px;
+    /* 圓角 */
+    cursor: pointer;
+    transition: background 0.3s;
+
+    color: #000000;
+    background-color: #f0f0f0;
+    box-shadow: 0 4px 0 #d0d0d0;
+}
+
+.add-to-cart:hover {
+    background-color: orange;
+    box-shadow: 0 5px 0 #d0d0d0; /* 陰影加深一點 */
+}
+
+.add-to-cart:active {
+    transform: translateY(3px);  /* 向下移動 */
+    box-shadow: 0 1px 0 #d0d0d0; /* 陰影縮減，模擬壓扁效果 */
 }
 
 /* 原價：灰色 + 劃線 */
@@ -300,4 +329,101 @@ footer p {
     font-size: 12px;
     font-weight: bold;
     z-index: 10;
+}
+
+/* 307~391都是footer排版*/
+/* Footer 整體背景 */
+.main-footer {
+    background-color: #222222;
+    /* 配合你的深色主題 */
+    color: #ffffff;
+    padding: 50px 0 20px 0;
+    border-top: 1px solid #444;
+    font-family: Arial, sans-serif;
+}
+
+/* 容器排版：使用 Flexbox */
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    /* 讓三區塊平均分佈 */
+    flex-wrap: wrap;
+    /* 手機版自動換行 */
+    padding: 0 20px;
+}
+
+/* 每一欄的通用樣式 */
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 30px;
+}
+
+/* 中間欄位文字居中 */
+.brand-info {
+    text-align: center;
+    flex: 1.5;
+    /* 讓中間區塊寬一點 */
+}
+
+/* 右側欄位文字靠右 */
+.tech-info {
+    text-align: right;
+}
+
+/* 標題樣式 */
+.footer-section h3,
+.footer-section h4 {
+    color: #ffa500;
+    /* 橘色點綴增加專業感 */
+    margin-bottom: 15px;
+}
+
+/* 連結樣式 */
+.footer-section a {
+    color: #bbb;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.footer-section a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* 練習用資訊區塊 */
+.practice-notice {
+    background-color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.practice-notice p {
+    font-size: 14px;
+    color: #ff6b6b;
+    /* 使用紅色提醒這是練習用 */
+    margin: 0;
+}
+
+.copyright {
+    font-size: 14px;
+    color: red;
+    margin-top: 20px;
+}
+
+/* 響應式調整：手機上看時全部居中 */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .tech-info {
+        text-align: center;
+    }
 }
