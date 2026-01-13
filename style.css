@@ -201,9 +201,19 @@ footer p {
     margin: 10% auto;
     padding: 30px;
     width: 300px;
-    border-radius: 10px;
+    border-radius: 15px;
     text-align: center;
     position: relative;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    /* 增加整體的輕微陰影 */
+}
+
+#authForm button,
+#switchModeBtn {
+    width: 50%;
+    box-sizing: border-box;
+    border-radius: 10px;
+    box-shadow: 0 4px 0 #d0d0d0;
 }
 
 /* 關閉按鈕 */
@@ -263,9 +273,11 @@ footer p {
     margin: 2px 0;
     /* 價格上下幾乎不留邊距 */
 }
+
 /* 266~296都是按鈕控制 */
 /* 按鈕縮小一點 */
 .add-to-cart {
+    width: 50%;
     padding: 8px 0;
     font-size: 0.85rem;
     margin-top: 5px;
@@ -287,12 +299,15 @@ footer p {
 
 .add-to-cart:hover {
     background-color: orange;
-    box-shadow: 0 5px 0 #d0d0d0; /* 陰影加深一點 */
+    box-shadow: 0 5px 0 #d0d0d0;
+    /* 陰影加深一點 */
 }
 
 .add-to-cart:active {
-    transform: translateY(3px);  /* 向下移動 */
-    box-shadow: 0 1px 0 #d0d0d0; /* 陰影縮減，模擬壓扁效果 */
+    transform: translateY(3px);
+    /* 向下移動 */
+    box-shadow: 0 1px 0 #d0d0d0;
+    /* 陰影縮減，模擬壓扁效果 */
 }
 
 /* 原價：灰色 + 劃線 */

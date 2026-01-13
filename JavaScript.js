@@ -57,7 +57,10 @@ baseTemplates.forEach((template) => {
 function filterCategory(targetName) {
     const title = document.getElementById('category-title');
     if (title) {
+        // 修改判斷邏輯
         if (targetName === '全部') {
+            title.innerText = '所有商品'; // 改成你想顯示的文字
+        } else if (targetName === '本季新品') {
             title.innerText = '新品上市';
         } else if (targetName === '熱門推薦') {
             title.innerText = '🔥 本季熱門推薦';
@@ -70,11 +73,11 @@ function filterCategory(targetName) {
     if (!container) return;
 
     container.innerHTML = '';
-    
+
     // 修正點：使用 categories 而非 cats，因為你在產出 products 時已經改名了
     products.forEach((item, originalIndex) => {
         if (item.categories.includes(targetName)) {
-            
+
             // 這裡同步修正判斷標籤的邏輯
             const hotBadge = item.categories.includes('熱門推薦') ? `<span class="hot-badge">HOT</span>` : '';
 
@@ -166,7 +169,7 @@ window.onclick = (e) => { if (e.target == authModal) authModal.style.display = '
 function updateAuthUI(name, gender) {
     const loginBtn = document.querySelector(".login-register-btn");
     if (loginBtn) {
-        loginBtn.innerText = `你好，${name}${gender}`;
+        loginBtn.innerText = `您好，${name}${gender}`;
         loginBtn.style.pointerEvents = "none";
     }
     const logoutBtn = document.getElementById("logoutBtn");
@@ -199,7 +202,7 @@ if (authForm) {
         e.preventDefault();
         const email = document.getElementById("authEmail").value;
         const password = document.getElementById("authPassword").value;
-        
+
         try {
             if (isLoginMode) {
                 // 登入模式
@@ -215,12 +218,12 @@ if (authForm) {
             authModal.style.display = "none";
         } catch (error) {
             console.error("Firebase 錯誤代碼:", error.code); // 方便開發者調試
-            
+
             // --- 自訂錯誤訊息開始 ---
             let errorMessage = "驗證失敗，請稍後再試。";
-            
-            if (error.code === 'auth/invalid-credential' || 
-                error.code === 'auth/user-not-found' || 
+
+            if (error.code === 'auth/invalid-credential' ||
+                error.code === 'auth/user-not-found' ||
                 error.code === 'auth/wrong-password') {
                 errorMessage = "輸入帳號或密碼錯誤";
             } else if (error.code === 'auth/invalid-email') {
@@ -230,8 +233,8 @@ if (authForm) {
             } else if (error.code === 'auth/weak-password') {
                 errorMessage = "密碼強度不足（至少需 6 位元）";
             }
-            
-            alert(errorMessage); 
+
+            alert(errorMessage);
             // --- 自訂錯誤訊息結束 ---
         }
     };
