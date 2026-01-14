@@ -281,7 +281,7 @@ window.openAboutModal = () => {
         title: '關於 SHOP LOGO',
         html: `
             <div style="text-align: left; line-height: 1.8;">
-                <p><strong>穿出城市的新節奏</strong></p>
+                <img src="Logo/Logo.png" alt="logo" class="logo-img" style="display: block; margin: 0 auto; width: 150px; height: auto;">                <p><strong>穿出城市的新節奏</strong></p>
                 <p>我們專注於提供<strong>重磅大學T</strong>與<strong>機能防風外套</strong>，將高品質面料與現代剪裁結合。</p>
                 <hr>
                 <p>✅ 7天鑑賞期，購物最安心</p>
@@ -289,7 +289,7 @@ window.openAboutModal = () => {
                 <p>客服信箱：service@shoplogo.com</p>
             </div>
         `,
-        confirmButtonText: '了解更多',
+        confirmButtonText: '繼續購物',
         confirmButtonColor: '#3085d6'
     });
 };
