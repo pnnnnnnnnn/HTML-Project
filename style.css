@@ -127,7 +127,8 @@ footer p {
     z-index: 1050;
     /* 比導覽列高 */
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
-    z-index: 9999;      /* 設為極高，確保在所有商品卡片與導覽列之上 */
+    z-index: 9999;
+    /* 設為極高，確保在所有商品卡片與導覽列之上 */
 
 }
 
@@ -447,23 +448,27 @@ footer p {
 /* 446-457 商品logo調整 */
 .logo {
     display: flex;
-    align-items: center; /* 讓圖片與文字垂直居中對齊 */
-    gap: 10px;           /* 圖片與文字間的距離 */
+    align-items: center;
+    /* 讓圖片與文字垂直居中對齊 */
+    gap: 10px;
+    /* 圖片與文字間的距離 */
     font-weight: bold;
 }
 
 .logo-img {
-    height: 70px;        /* 調整圖片高度以符合標題列 */
+    height: 70px;
+    /* 調整圖片高度以符合標題列 */
     width: auto;
 }
 
 /* 針對黃色標題區塊進行調整 */
-section.bg-danger {
+section {
     /* 這裡的數值請根據你導覽列的高度來調整，通常 60px - 80px 左右 */
-    margin-top: 42px ;
-    padding: 20px 0; /* 增加內距讓標題看起來更大氣 */
+    margin-top: 42px;
+    padding: 20px 0;
+    /* 增加內距讓標題看起來更大氣 */
 }
 
-.logo span{
+.logo span {
     font-size: 20px;
 }

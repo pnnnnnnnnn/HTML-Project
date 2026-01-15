@@ -1,24 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// 修改這行，加入 signOut
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-// --- 1. Firebase 配置防錯處理 ---
-// 如果在本地直接開啟 HTML 而非透過 Vite 伺服器，import.meta.env 會報錯
-const firebaseConfig = {
-    apiKey: import.meta.env?.VITE_FIREBASE_API_KEY || "YOUR_FALLBACK_API_KEY",
-    authDomain: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env?.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env?.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env?.VITE_FIREBASE_APP_ID,
-};
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-// --- 2. 變數與資料定義 ---
-let isLoginMode = true; // 修正：必須先宣告，否則切換模式會報錯
+// --- 1. 全域變數定義 ---
+let db, auth;
+let isLoginMode = true; 
 let cart = [];
 
 const colorMap = {
@@ -53,34 +39,58 @@ baseTemplates.forEach((template) => {
     });
 });
 
+// --- 2. 初始化 App (從後端拿配置) ---
+async function startApp() {
+    // 優先顯示商品，避免載入 Firebase 時空白
+    filterCategory('全部');
+
+    try {
+        const res = await fetch('/api/config');
+        const config = await res.json();
+        const app = initializeApp(config);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        // 監聽登入狀態
+        onAuthStateChanged(auth, async (user) => {
+            const loginBtn = document.querySelector(".login-register-btn");
+            const logoutBtn = document.getElementById("logoutBtn");
+            if (user) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    updateAuthUI(userData.name, userData.gender);
+                }
+            } else {
+                if (loginBtn) {
+                    loginBtn.innerText = "登入/註冊";
+                    loginBtn.style.pointerEvents = "auto";
+                }
+                if (logoutBtn) logoutBtn.style.display = "none";
+            }
+        });
+    } catch (err) {
+        console.error("Firebase 初始化失敗，請檢查 server.js 是否啟動:", err);
+    }
+}
+
 // --- 3. 商品渲染功能 ---
-function filterCategory(targetName) {
+window.filterCategory = (targetName) => {
     const title = document.getElementById('category-title');
     if (title) {
-        // 修改判斷邏輯
-        if (targetName === '全部') {
-            title.innerText = '所有商品'; // 改成你想顯示的文字
-        } else if (targetName === '本季新品') {
-            title.innerText = '新品上市';
-        } else if (targetName === '熱門推薦') {
-            title.innerText = '🔥 本季熱門推薦';
-        } else {
-            title.innerText = targetName;
-        }
+        if (targetName === '全部') title.innerText = '所有商品';
+        else if (targetName === '本季新品') title.innerText = '新品上市';
+        else if (targetName === '熱門推薦') title.innerText = '🔥 本季熱門推薦';
+        else title.innerText = targetName;
     }
 
     const container = document.getElementById('product-list');
     if (!container) return;
-
     container.innerHTML = '';
 
-    // 修正點：使用 categories 而非 cats，因為你在產出 products 時已經改名了
     products.forEach((item, originalIndex) => {
         if (item.categories.includes(targetName)) {
-
-            // 這裡同步修正判斷標籤的邏輯
             const hotBadge = item.categories.includes('熱門推薦') ? `<span class="hot-badge">HOT</span>` : '';
-
             const priceDisplay = item.originalPrice
                 ? `<p class="product-price sale"><span class="old-price">$ ${item.originalPrice}</span> <span class="new-price">$ ${item.price}</span></p>`
                 : `<p class="product-price">$ ${item.price}</p>`;
@@ -101,20 +111,15 @@ function filterCategory(targetName) {
             </div>`;
         }
     });
-}
-
-window.filterCategory = filterCategory;
+};
 
 // --- 4. 購物車邏輯 ---
 window.addToCart = (index) => {
     Swal.fire({ icon: 'success', title: '已加入購物車', timer: 1000, showConfirmButton: false, toast: true, position: 'top-end' });
     const product = products[index];
     const existingItem = cart.find(item => item.name === product.name);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ ...product, quantity: 1 });
-    }
+    if (existingItem) existingItem.quantity += 1;
+    else cart.push({ ...product, quantity: 1 });
     updateCartUI();
 };
 
@@ -156,16 +161,11 @@ window.removeFromCart = (index) => { cart.splice(index, 1); updateCartUI(); };
 window.openCart = () => { document.getElementById('cart-modal').style.display = 'block'; };
 window.closeCart = () => { document.getElementById('cart-modal').style.display = 'none'; };
 
-// --- 5. 會員登入註冊邏輯 ---
+// --- 5. 會員登入註冊 ---
 const authModal = document.getElementById('authModal');
-const closeBtn = document.querySelector('.close-btn');
-const authForm = document.getElementById('authForm');
-
 window.openAuthModal = () => { authModal.style.display = 'block'; };
-if (closeBtn) closeBtn.onclick = () => { authModal.style.display = 'none'; };
-window.onclick = (e) => { if (e.target == authModal) authModal.style.display = 'none'; };
+document.querySelector('.close-btn').onclick = () => { authModal.style.display = 'none'; };
 
-// 更新登入 UI (需在 HTML 加入對應 ID)
 function updateAuthUI(name, gender) {
     const loginBtn = document.querySelector(".login-register-btn");
     if (loginBtn) {
@@ -176,106 +176,98 @@ function updateAuthUI(name, gender) {
     if (logoutBtn) logoutBtn.style.display = "inline";
 }
 
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            updateAuthUI(userData.name, userData.gender);
-        }
-    }
-});
+document.getElementById("switchModeBtn").onclick = () => {
+    isLoginMode = !isLoginMode;
+    document.getElementById("modalTitle").innerText = isLoginMode ? "會員登入" : "帳號申請";
+    document.getElementById("mainAuthBtn").innerText = isLoginMode ? "登入" : "註冊";
+    document.getElementById("userInfoFields").style.display = isLoginMode ? "none" : "block";
+    document.getElementById("switchModeBtn").innerText = isLoginMode ? "帳號申請" : "立即登入";
+};
 
-const switchModeBtn = document.getElementById("switchModeBtn");
-if (switchModeBtn) {
-    switchModeBtn.onclick = () => {
-        isLoginMode = !isLoginMode;
-        document.getElementById("modalTitle").innerText = isLoginMode ? "會員登入" : "帳號申請";
-        document.getElementById("mainAuthBtn").innerText = isLoginMode ? "登入" : "註冊";
-        document.getElementById("userInfoFields").style.display = isLoginMode ? "none" : "block";
-        switchModeBtn.innerText = isLoginMode ? "帳號申請" : "立即登入";
-    };
-}
-
-if (authForm) {
-    authForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("authEmail").value;
-        const password = document.getElementById("authPassword").value;
-
-        try {
-            if (isLoginMode) {
-                // 登入模式
-                await signInWithEmailAndPassword(auth, email, password);
-            } else {
-                // 註冊模式
-                const name = document.getElementById("userName").value;
-                const gender = document.getElementById("userGender").value;
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await setDoc(doc(db, "users", userCredential.user.uid), { name, gender, email });
-                alert("註冊成功！");
-            }
-            authModal.style.display = "none";
-        } catch (error) {
-            console.error("Firebase 錯誤代碼:", error.code); // 方便開發者調試
-
-            // --- 自訂錯誤訊息開始 ---
-            let errorMessage = "驗證失敗，請稍後再試。";
-
-            if (error.code === 'auth/invalid-credential' ||
-                error.code === 'auth/user-not-found' ||
-                error.code === 'auth/wrong-password') {
-                errorMessage = "輸入帳號或密碼錯誤";
-            } else if (error.code === 'auth/invalid-email') {
-                errorMessage = "電子郵件格式不正確";
-            } else if (error.code === 'auth/email-already-in-use') {
-                errorMessage = "此電子郵件已被註冊";
-            } else if (error.code === 'auth/weak-password') {
-                errorMessage = "密碼強度不足（至少需 6 位元）";
-            }
-
-            alert(errorMessage);
-            // --- 自訂錯誤訊息結束 ---
-        }
-    };
-}
-
-// --- 登出功能 ---
-window.handleLogout = async () => {
+document.getElementById('authForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("authEmail").value;
+    const password = document.getElementById("authPassword").value;
     try {
-        await signOut(auth);
-        alert("您已成功登出");
-        // 登出後的 UI 恢復由下方 onAuthStateChanged 自動處理
+        if (isLoginMode) {
+            await signInWithEmailAndPassword(auth, email, password);
+        } else {
+            const name = document.getElementById("userName").value;
+            const gender = document.getElementById("userGender").value;
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            await setDoc(doc(db, "users", userCredential.user.uid), { name, gender, email });
+            alert("註冊成功！");
+        }
+        authModal.style.display = "none";
     } catch (error) {
-        console.error("登出失敗:", error);
-        alert("登出失敗：" + error.message);
+        alert("驗證失敗: " + error.message);
     }
 };
 
-onAuthStateChanged(auth, async (user) => {
-    const loginBtn = document.querySelector(".login-register-btn");
-    const logoutBtn = document.getElementById("logoutBtn");
+window.handleLogout = async () => {
+    await signOut(auth);
+    alert("您已成功登出");
+};
 
-    if (user) {
-        // 已登入情況
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            updateAuthUI(userData.name, userData.gender);
-        }
-    } else {
-        // 未登入情況：恢復 UI 狀態
-        if (loginBtn) {
-            loginBtn.innerText = "登入/註冊";
-            loginBtn.style.pointerEvents = "auto"; // 恢復點擊功能
-        }
-        if (logoutBtn) {
-            logoutBtn.style.display = "none"; // 隱藏登出按鈕
+// --- 6. 結帳邏輯 (含登入檢查) ---
+window.checkout = async () => {
+    // 檢查登入
+    if (!auth || !auth.currentUser) {
+        Swal.fire({
+            title: '請先登入',
+            text: '您必須登入後才能進行結帳',
+            icon: 'warning',
+            confirmButtonText: '前往登入'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                closeCart();
+                openAuthModal();
+            }
+        });
+        return;
+    }
+
+    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    if (totalPrice <= 0) {
+        Swal.fire('購物車是空的', '請先挑選商品再結帳', 'warning');
+        return;
+    }
+
+    const result = await Swal.fire({
+        title: '確認結帳',
+        text: `總金額為 $${totalPrice}，即將跳轉至綠界測試刷卡頁面`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: '確定'
+    });
+
+    if (result.isConfirmed) {
+        try {
+            Swal.showLoading();
+            const response = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: totalPrice })
+            });
+
+            const data = await response.json();
+            const checkoutContainer = document.createElement('div');
+            checkoutContainer.innerHTML = data.html;
+            document.body.appendChild(checkoutContainer);
+
+            cart = []; 
+            updateCartUI(); 
+            closeCart();
+
+            const form = checkoutContainer.querySelector('form');
+            if (form) form.submit();
+        } catch (error) {
+            Swal.fire('系統錯誤', `無法連接金流伺服器: ${error.message}`, 'error');
         }
     }
-});
+};
 
-//關於我們的資料
+// 關於我們
 window.openAboutModal = () => {
     Swal.fire({
         title: '關於 SHOP LOGO',
@@ -294,6 +286,5 @@ window.openAboutModal = () => {
     });
 };
 
-// --- 6. 初始加載 ---
-filterCategory('全部');
-
+// 啟動程式
+startApp();
