@@ -1,9 +1,3 @@
-// server.js
-require('dotenv').config(); 
-
-console.log("後端已載入 API KEY:", process.env.VITE_FIREBASE_API_KEY); 
-// 注意：Node.js 使用 process.env 而非 import.meta.env
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const crypto = require('crypto'); // 使用內建加密模組
@@ -12,16 +6,16 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 // 讓後端可以讀取到你放在同一個資料夾的前端 HTML、JS、CSS 檔案
-app.use(express.static('./')); 
+app.use(express.static('./'));
 //設定後端抓不到資料庫API問題
 app.get('/api/config', (req, res) => {
     res.json({
-        apiKey: process.env.VITE_FIREBASE_API_KEY,
-        authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
-        projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-        storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-        appId: process.env.VITE_FIREBASE_APP_ID
+        apiKey: "AIzaSyAJe0-R8i6Q7W2a-tL8Wmo5dy7ypP2eQLE",
+        authDomain: "pnpn-99c5a.firebaseapp.com",
+        projectId: "pnpn-99c5a",
+        storageBucket: "pnpn-99c5a.firebasestorage.app",
+        messagingSenderId: "950085205947",
+        appId: "1:950085205947:web:1afee53e9425fe662d8e9e"
     });
 });
 
@@ -42,7 +36,7 @@ const HashIV = 'EkRm7iFT261dpevs';
 function generateCheckMacValue(params, key, iv) {
     const sortedKeys = Object.keys(params).sort();
     let rawStr = `HashKey=${key}&` + sortedKeys.map(k => `${k}=${params[k]}`).join('&') + `&HashIV=${iv}`;
-    
+
     // 轉為 URL 編碼並處理特殊字元
     let urlEncoded = encodeURIComponent(rawStr).toLowerCase()
         .replace(/%20/g, '+')
@@ -61,11 +55,11 @@ function generateCheckMacValue(params, key, iv) {
 app.post('/api/checkout', (req, res) => {
     const { amount } = req.body;
     const date = new Date();
-    const formattedDate = date.getFullYear() + '/' + 
-        ('0' + (date.getMonth() + 1)).slice(-2) + '/' + 
-        ('0' + date.getDate()).slice(-2) + ' ' + 
-        ('0' + date.getHours()).slice(-2) + ':' + 
-        ('0' + date.getMinutes()).slice(-2) + ':' + 
+    const formattedDate = date.getFullYear() + '/' +
+        ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
+        ('0' + date.getDate()).slice(-2) + ' ' +
+        ('0' + date.getHours()).slice(-2) + ':' +
+        ('0' + date.getMinutes()).slice(-2) + ':' +
         ('0' + date.getSeconds()).slice(-2);
 
     const base_param = {
