@@ -376,6 +376,10 @@ footer p {
     margin-bottom: 30px;
 }
 
+.contact-info{
+    text-align: left;
+}
+
 /* 中間欄位文字居中 */
 .brand-info {
     text-align: center;
@@ -385,7 +389,7 @@ footer p {
 
 /* 右側欄位文字靠右 */
 .tech-info {
-    text-align: right;
+    text-align: left;
 }
 
 /* 標題樣式 */

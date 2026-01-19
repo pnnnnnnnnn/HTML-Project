@@ -30,7 +30,8 @@
         <div class="user-controls">
             <div class="auth-buttons">
                 <a href="#" class="login-register-btn" onclick="openAuthModal()">登入/註冊</a>
-                <a href="#" id="historyBtn" onclick="showOrderHistory(); return false;" style="display:none ;color: red; margin-left: 10px;">購買紀錄</a>
+                <a href="#" id="historyBtn" onclick="showOrderHistory(); return false;"
+                    style="display:none ;color: red; margin-left: 10px;">購買紀錄</a>
                 <a href="#" id="logoutBtn" onclick="handleLogout()"
                     style="display: none; color: gray; margin-left: 10px;">登出</a>
             </div>
@@ -83,8 +84,12 @@
             </div>
 
             <div class="footer-section tech-info">
-                <h4>技術支援</h4>
-                <p>Powered by Vanilla JS & Firebase & CSS</p>
+                <h4>使用技術</h4>
+                <p>
+                    前端： JS & CSS<br>
+                    後端：Firebase 資料庫<br>
+                    支付：綠界 ECPay 金流串接 
+                </p>
             </div>
         </div>
     </footer>
@@ -101,8 +106,7 @@
 
             <hr>
             <button onclick="closeCart()">關閉</button>
-            <button onclick="checkout()"
-                style="cursor: pointer;">
+            <button onclick="checkout()" style="cursor: pointer;">
                 前往結帳
             </button>
         </div>
