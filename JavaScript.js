@@ -1,10 +1,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+    getFirestore, doc, getDoc, setDoc,
+    collection, addDoc, query, where, getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 1. 全域變數定義 ---
+// --- 接下來接原本的全域變數定義 ---
 let db, auth;
-let isLoginMode = true; 
+let isLoginMode = true;
 let cart = [];
 
 const colorMap = {
@@ -55,17 +58,25 @@ async function startApp() {
         onAuthStateChanged(auth, async (user) => {
             const loginBtn = document.querySelector(".login-register-btn");
             const logoutBtn = document.getElementById("logoutBtn");
+            const historyBtn = document.getElementById("historyBtn"); // 1. 抓取按鈕
+
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
                     updateAuthUI(userData.name, userData.gender);
+
+                    // 2. 登入成功後，顯示按鈕
+                    if (historyBtn) historyBtn.style.display = "inline";
+                    if (logoutBtn) logoutBtn.style.display = "inline";
                 }
             } else {
+                // 3. 登出後，隱藏按鈕
                 if (loginBtn) {
                     loginBtn.innerText = "登入/註冊";
                     loginBtn.style.pointerEvents = "auto";
                 }
+                if (historyBtn) historyBtn.style.display = "none";
                 if (logoutBtn) logoutBtn.style.display = "none";
             }
         });
@@ -211,7 +222,7 @@ window.handleLogout = async () => {
 
 // --- 6. 結帳邏輯 (含登入檢查) ---
 window.checkout = async () => {
-    // 檢查登入
+    // 1. 檢查登入 (保持不變)
     if (!auth || !auth.currentUser) {
         Swal.fire({
             title: '請先登入',
@@ -227,6 +238,7 @@ window.checkout = async () => {
         return;
     }
 
+    // 2. 檢查購物車 (保持不變)
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     if (totalPrice <= 0) {
         Swal.fire('購物車是空的', '請先挑選商品再結帳', 'warning');
@@ -244,6 +256,23 @@ window.checkout = async () => {
     if (result.isConfirmed) {
         try {
             Swal.showLoading();
+
+            // --- 新增：先將訂單資料存入 Firebase Firestore ---
+            // 這樣即使金流跳轉，資料庫也已經有紀錄了
+            await addDoc(collection(db, "orders"), {
+                userId: auth.currentUser.uid,        // 紀錄是誰買的
+                items: cart.map(item => ({           // 紀錄買了哪些商品
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity
+                })),
+                totalAmount: totalPrice,             // 總金額
+                timestamp: new Date().toISOString(), // 購買日期
+                status: "已送出訂單(待付款)"
+            });
+            // --------------------------------------------
+
+            // 3. 呼叫後端金流 API
             const response = await fetch('/api/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -255,17 +284,82 @@ window.checkout = async () => {
             checkoutContainer.innerHTML = data.html;
             document.body.appendChild(checkoutContainer);
 
-            cart = []; 
-            updateCartUI(); 
+            // 清空購物車
+            cart = [];
+            updateCartUI();
             closeCart();
 
+            // 執行綠界表單跳轉
             const form = checkoutContainer.querySelector('form');
             if (form) form.submit();
+
         } catch (error) {
-            Swal.fire('系統錯誤', `無法連接金流伺服器: ${error.message}`, 'error');
+            console.error("結帳發生錯誤:", error);
+            Swal.fire('系統錯誤', `無法處理訂單: ${error.message}`, 'error');
         }
     }
 };
+
+//查詢紀錄
+window.showOrderHistory = async () => {
+    // 檢查是否登入
+    if (!auth.currentUser) {
+        Swal.fire('請先登入', '登入後即可查看您的購買紀錄', 'info');
+        return;
+    }
+
+    Swal.fire({ title: '正在讀取紀錄...', didOpen: () => Swal.showLoading() });
+
+    try {
+        // 從 orders 集合中查詢 userId 等於當前使用者的資料
+        const q = query(
+            collection(db, "orders"),
+            where("userId", "==", auth.currentUser.uid)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        let html = '<div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 10px;">';
+
+        if (querySnapshot.empty) {
+            html += '<p style="text-align:center; color:#888;">尚無任何購買紀錄。</p>';
+        } else {
+            // 將紀錄依照時間排序（或是由前端處理排序）
+            const docs = [];
+            querySnapshot.forEach(doc => docs.push(doc.data()));
+            docs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+            docs.forEach((order) => {
+                const date = new Date(order.timestamp).toLocaleString();
+                html += `
+                    <div style="border-bottom: 1px solid #eee; margin-bottom: 15px; padding-bottom: 10px;">
+                        <div style="font-size: 0.8rem; color: #777;">購買日期：${date}</div>
+                        <div style="font-weight: bold; color: #e44d26; margin: 5px 0;">總計金額：$ ${order.totalAmount}</div>
+                        <ul style="list-style: none; padding-left: 0; font-size: 0.9rem;">
+                            ${order.items.map(item => `
+                                <li style="display: flex; justify-content: space-between;">
+                                    <span>${item.name}</span>
+                                    <span>x${item.quantity}</span>
+                                </li>`).join('')}
+                        </ul>
+                    </div>`;
+            });
+        }
+        html += '</div>';
+
+        Swal.fire({
+            title: '我的購買紀錄',
+            html: html,
+            confirmButtonText: '關閉',
+            confirmButtonColor: '#333'
+        });
+
+    } catch (error) {
+        console.error("讀取紀錄失敗:", error);
+        Swal.fire('錯誤', '暫時無法取得紀錄，請稍後再試', 'error');
+    }
+};
+
 
 // 關於我們
 window.openAboutModal = () => {
