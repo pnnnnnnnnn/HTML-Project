@@ -238,7 +238,7 @@ footer p {
     display: none;
     /* 預設隱藏 */
     position: fixed;
-    z-index: 2000;
+    z-index: 5000;
     /* 最高的層級，確保蓋住購物車 */
     left: 0;
     top: 0;
@@ -578,10 +578,29 @@ footer p {
     .logo-img {
         height: 40px;
     }
+
     /* 增加標題與上方的距離 */
     section {
-        margin-top: 200px !important; /* 增加數值直到標題顯現 */
+        margin-top: 180px !important;
+        /* 增加數值直到標題顯現 */
         padding: 20px 0;
+    }
+
+    /* 強制彈窗在最前面 */
+    .modal {
+        position: fixed !important;
+        z-index: 99999 !important;
+        /* 再多加一個 9 */
+    }
+
+    /* 如果你是用 SweetAlert (swal2)，也要改這個 */
+    .swal2-container {
+        z-index: 100000 !important;
+    }
+
+    /* Navbar 也要降一點層級，避免它贏過彈窗 */
+    .navbar {
+        z-index: 1000 !important;
     }
 
 }
