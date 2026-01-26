@@ -15,28 +15,29 @@
 <body>
 
     <header class="navbar">
-        <div class="logo">
+        <div class="nav-left">
             <img src="Logo/Logo.png" alt="logo" class="logo-img">
             <span>購物商城</span>
         </div>
 
-        <nav class="nav-links">
-            <a href="#" onclick="filterCategory('熱門推薦'); return false;"
-                style="color:red; font-weight: bold;font-size: 20px;">熱門推薦</a>
-            <a href="#" onclick="openAboutModal(); return false;"
-                style="color: orange; font-size: 20px; font-weight: bold; text-decoration: none;">關於我們</a>
-        </nav>
-
-        <div class="user-controls">
-            <div class="auth-buttons">
-                <a href="#" class="login-register-btn" onclick="openAuthModal()">登入/註冊</a>
-                <a href="#" id="historyBtn" onclick="showOrderHistory(); return false;"
-                    style="display:none ;color: red; margin-left: 10px;">購買紀錄</a>
-                <a href="#" id="logoutBtn" onclick="handleLogout()"
-                    style="display: none; color: gray; margin-left: 10px;">登出</a>
+        <div class="nav-right">
+            <div class="nav-links">
+                <a href="#" onclick="filterCategory('熱門推薦'); return false;"
+                    style="color:red; font-weight: bold;font-size: 20px;">熱門推薦</a>
+                <a href="#" onclick="openAboutModal(); return false;"
+                    style="color: orange; font-size: 20px; font-weight: bold; text-decoration: none;">關於我們</a>
             </div>
-            <div class="cart-icon" onclick="openCart()" style="cursor: pointer;">
-                🛒 <span class="cart-count">0</span>
+
+            <div class="user-controls">
+                <div class="auth-buttons">
+                    <a href="#" class="login-register-btn" onclick="openAuthModal()">登入/註冊</a>
+                    <a href="#" id="historyBtn" onclick="showOrderHistory(); return false;"
+                        style="display:none;">購買紀錄</a>
+                    <a href="#" id="logoutBtn" onclick="handleLogout()" style="display: none;">登出</a>
+                </div>
+                <div class="cart-icon" onclick="openCart()">
+                    🛒 <span class="cart-count">0</span>
+                </div>
             </div>
         </div>
     </header>
@@ -46,20 +47,21 @@
     </section>
 
     <div class="main-content" style="display: flex; padding: 0px 1% 0px 5%; ">
-<aside class="sidebar">
-    <h3 style="margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #333;">商品分類</h3>
-    <ul style="list-style: none; padding: 0;">
-        <li><a href="#" onclick="filterCategory('本季新品'); return false;" style="color: #d9534f; font-weight: bold;">🔥 本季新品</a></li>
-        <li><a href="#" onclick="filterCategory('限時特惠'); return false;">💰 限時特惠</a></li>
-        <hr>
-        <li><a href="#" onclick="filterCategory('全部'); return false;">所有商品</a></li>
-        <li><a href="#" onclick="filterCategory('上衣'); return false;">男裝上衣</a></li>
-        <li><a href="#" onclick="filterCategory('褲子'); return false;">休閒褲子</a></li>
-        <li><a href="#" onclick="filterCategory('外套'); return false;">防風外套</a></li>
-        <li><a href="#" onclick="filterCategory('機能運動'); return false;">機能運動</a></li>
-        <li><a href="#" onclick="filterCategory('配件'); return false;">潮流配件</a></li>
-    </ul>
-</aside>
+        <aside class="sidebar">
+            <h3 style="margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #333;">商品分類</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li><a href="#" onclick="filterCategory('本季新品'); return false;"
+                        style="color: #d9534f; font-weight: bold;">🔥 本季新品</a></li>
+                <li><a href="#" onclick="filterCategory('限時特惠'); return false;">💰 限時特惠</a></li>
+                <hr>
+                <li><a href="#" onclick="filterCategory('全部'); return false;">所有商品</a></li>
+                <li><a href="#" onclick="filterCategory('上衣'); return false;">男裝上衣</a></li>
+                <li><a href="#" onclick="filterCategory('褲子'); return false;">休閒褲子</a></li>
+                <li><a href="#" onclick="filterCategory('外套'); return false;">防風外套</a></li>
+                <li><a href="#" onclick="filterCategory('機能運動'); return false;">機能運動</a></li>
+                <li><a href="#" onclick="filterCategory('配件'); return false;">潮流配件</a></li>
+            </ul>
+        </aside>
 
         <main class="product-container" id="product-list" style="flex: 1;">
         </main>

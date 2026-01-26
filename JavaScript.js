@@ -191,11 +191,15 @@ document.querySelector('.close-btn').onclick = () => { authModal.style.display =
 function updateAuthUI(name, gender) {
     const loginBtn = document.querySelector(".login-register-btn");
     if (loginBtn) {
-        loginBtn.innerText = `您好，${name}${gender}`;
+        // 加上 <span class="user-welcome"> 來控制顏色
+        loginBtn.innerHTML = `<span class="user-welcome">您好，${name}${gender}</span>`;
         loginBtn.style.pointerEvents = "none";
+        loginBtn.style.textDecoration = "none"; // 移除底線
     }
     const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) logoutBtn.style.display = "inline";
+    if (logoutBtn) {
+        logoutBtn.style.display = "inline";
+    }
 }
 
 document.getElementById("switchModeBtn").onclick = () => {

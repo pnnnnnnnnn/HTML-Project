@@ -104,21 +104,24 @@ body {
     padding-bottom: 25px;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff !important; /* 最底層背景 */
+    background-color: #ffffff !important;
+    /* 最底層背景 */
     border-radius: 8px;
     height: 100%;
 }
 
 .product-card:hover {
-    transform: translateY(-5px); /* 向上浮起 */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+    /* 向上浮起 */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     border-color: #007bff;
 }
 
 .product-img-container {
-overflow: hidden;
+    overflow: hidden;
     border-radius: 8px 8px 0 0;
-    background-color: #ffffff !important; /* 確保容器本身是純白 */
+    background-color: #ffffff !important;
+    /* 確保容器本身是純白 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -129,7 +132,8 @@ overflow: hidden;
 }
 
 .product-card:hover .product-img-container img {
-    transform: scale(1.1); /* 圖片輕微放大 */
+    transform: scale(1.1);
+    /* 圖片輕微放大 */
 }
 
 .product-card img {
@@ -139,8 +143,9 @@ overflow: hidden;
     height: auto;
     /* 核心魔法：這會把圖片中的純白/透明部分與容器的純白融合，
        網格色塊會因為與白色相乘而消失，只留下商品本身的色塊 */
-    mix-blend-mode: multiply; 
-    filter: brightness(1.02); /* 稍微調亮一點點，讓白色背景更乾淨 */
+    mix-blend-mode: multiply;
+    filter: brightness(1.02);
+    /* 稍微調亮一點點，讓白色背景更乾淨 */
 }
 
 footer {
@@ -490,6 +495,98 @@ footer p {
     .tech-info {
         text-align: center;
     }
+
+    /* 隱藏側邊欄標題和電腦版列表 */
+    .sidebar-title,
+    .desktop-menu {
+        display: none;
+    }
+
+    /* 顯示下拉選單 */
+    .mobile-only {
+        display: block;
+    }
+
+    /* 讓側邊欄不再佔據左側空間，改為佔滿寬度 */
+    .sidebar {
+        flex: 0 0 auto;
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+        padding: 10px;
+        position: static;
+        display: none; /* 或改為橫向排列 */
+        /* 移除 sticky，防止手機滑動問題 */
+    }
+
+    .main-content {
+        flex-direction: column;
+    }
+
+    .navbar {
+        display: grid;
+        /* 左邊放 Logo，右邊放兩行文字 */
+        grid-template-columns: 1fr 2fr;
+        gap: 10px;
+        height: auto !important;
+    }
+
+    .nav-left {
+        grid-row: 1 / span 2;
+        /* 跨兩行 */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .nav-right {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .nav-links {
+        /* 關鍵修正：取消電腦版的絕對定位，讓 order 生效 */
+        position: static !important;
+        transform: none !important;
+
+        order: 1;
+        /* 熱門推薦在上 */
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .user-controls {
+        order: 2;
+        /* 登入註冊在下 */
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    /* 縮小文字防止再次重疊 */
+    .nav-links a,
+    .user-controls a {
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    /* 讓導覽列內容垂直排列或換行 */
+    header {
+        flex-wrap: wrap;
+    }
+
+    /* 縮小圖片以利閱讀 */
+    .logo-img {
+        height: 40px;
+    }
+
 }
 
 /* 446-457 商品logo調整 */
@@ -542,4 +639,36 @@ section.text-center {
     border-left: 3px solid #007bff;
     /* 增加一個左側小藍條，更有質感 */
     padding-left: 10px !important;
+}
+
+.user-welcome {
+    color: #FFD700 !important;
+    /* 金黃色，在白色背景會比較清晰 */
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* 2. 登出按鈕的顏色 (紅色) */
+#logoutBtn {
+    color: #ff4d4d !important;
+    /* 亮紅色 */
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 20px;
+    /* 跟登入按鈕大小一致 */
+    margin-left: 10px;
+    transition: 0.3s;
+}
+
+#logoutBtn:hover {
+    color: #b30000 !important;
+    /* 滑鼠移上去變深紅 */
+}
+
+/* 3. 修正購買紀錄的顏色 (可選，避免它還是藍色) */
+#historyBtn {
+    color: #333 !important;
+    /* 深灰色 */
+    text-decoration: none;
+    font-size: 20px;
 }
