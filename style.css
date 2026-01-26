@@ -535,12 +535,21 @@ footer p {
     }
 
     /* 讓左側 Logo 區塊與右側控制區塊佔滿寬度 */
-    .nav-left,
-    .nav-right {
+    .nav-left {
         width: 100%;
-        justify-content: center;
+        justify-content: flex-start !important;
+        /* 改為靠左 */
         display: flex;
         margin-bottom: 5px;
+        padding-left: 10px;
+        /* 稍微留點邊距比較好看 */
+    }
+
+    .nav-right {
+        width: 100%;
+        justify-content: flex-end !important;
+        /* 選項：讓右側控制項靠右 */
+        display: flex;
     }
 
     /* 導覽連結區塊 */
