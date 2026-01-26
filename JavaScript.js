@@ -87,6 +87,17 @@ async function startApp() {
 
 // --- 3. 商品渲染功能 ---
 window.filterCategory = (targetName) => {
+
+    const navLinks = document.querySelectorAll('.sidebar ul li a');
+    navLinks.forEach(link => {
+        // 移除所有人的 active 類別
+        link.classList.remove('active');
+        // 如果連結文字包含 targetName，就加上 active (處理包含表情符號的情況)
+        if (link.innerText.includes(targetName) || (targetName === '全部' && link.innerText.includes('所有商品'))) {
+            link.classList.add('active');
+        }
+    });
+    
     const title = document.getElementById('category-title');
     if (title) {
         if (targetName === '全部') title.innerText = '所有商品';

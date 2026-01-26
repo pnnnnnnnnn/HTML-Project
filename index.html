@@ -24,7 +24,7 @@
             <a href="#" onclick="filterCategory('熱門推薦'); return false;"
                 style="color:red; font-weight: bold;font-size: 20px;">熱門推薦</a>
             <a href="#" onclick="openAboutModal(); return false;"
-                style="color: orange; font-size: 18px; font-weight: bold; text-decoration: none;">關於我們</a>
+                style="color: orange; font-size: 20px; font-weight: bold; text-decoration: none;">關於我們</a>
         </nav>
 
         <div class="user-controls">
@@ -45,22 +45,21 @@
         <h1 id="category-title">新品上市</h1>
     </section>
 
-    <div class="main-content" style="display: flex; padding: 20px 1%; gap: 20px;">
-        <aside class="sidebar">
-            <h3 style="margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #333;">商品分類</h3>
-            <ul style="list-style: none; padding: 0;">
-                <li><a href="#new" onclick="filterCategory('本季新品')" style="color: #d9534f; font-weight: bold;">🔥
-                        本季新品</a></li>
-                <li><a href="#sale" onclick="filterCategory('限時特惠')">💰 限時特惠</a></li>
-                <hr>
-                <li><a href="#all" onclick="filterCategory('全部')">所有商品</a></li>
-                <li><a href="#tops" onclick="filterCategory('上衣')">男裝上衣</a></li>
-                <li><a href="#pants" onclick="filterCategory('褲子')">休閒長褲</a></li>
-                <li><a href="#outerwear" onclick="filterCategory('外套')">防風外套</a></li>
-                <li><a href="#sport" onclick="filterCategory('機能運動')">機能運動</a></li>
-                <li><a href="#accessories" onclick="filterCategory('配件')">潮流配件</a></li>
-            </ul>
-        </aside>
+    <div class="main-content" style="display: flex; padding: 0px 1% 0px 5%; ">
+<aside class="sidebar">
+    <h3 style="margin-bottom: 15px; font-size: 1.2rem; border-bottom: 2px solid #333;">商品分類</h3>
+    <ul style="list-style: none; padding: 0;">
+        <li><a href="#" onclick="filterCategory('本季新品'); return false;" style="color: #d9534f; font-weight: bold;">🔥 本季新品</a></li>
+        <li><a href="#" onclick="filterCategory('限時特惠'); return false;">💰 限時特惠</a></li>
+        <hr>
+        <li><a href="#" onclick="filterCategory('全部'); return false;">所有商品</a></li>
+        <li><a href="#" onclick="filterCategory('上衣'); return false;">男裝上衣</a></li>
+        <li><a href="#" onclick="filterCategory('褲子'); return false;">休閒褲子</a></li>
+        <li><a href="#" onclick="filterCategory('外套'); return false;">防風外套</a></li>
+        <li><a href="#" onclick="filterCategory('機能運動'); return false;">機能運動</a></li>
+        <li><a href="#" onclick="filterCategory('配件'); return false;">潮流配件</a></li>
+    </ul>
+</aside>
 
         <main class="product-container" id="product-list" style="flex: 1;">
         </main>
@@ -88,7 +87,7 @@
                 <p>
                     前端： JS & CSS<br>
                     後端：Firebase 資料庫<br>
-                    支付：綠界 ECPay 金流串接 
+                    支付：綠界 ECPay 金流串接
                 </p>
             </div>
         </div>
