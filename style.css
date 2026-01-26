@@ -515,7 +515,6 @@ footer p {
         margin-bottom: 10px;
         padding: 10px;
         position: static;
-        display: none; /* 或改為橫向排列 */
         /* 移除 sticky，防止手機滑動問題 */
     }
 
@@ -524,50 +523,43 @@ footer p {
     }
 
     .navbar {
-        display: grid;
-        /* 左邊放 Logo，右邊放兩行文字 */
-        grid-template-columns: 1fr 2fr;
-        gap: 10px;
+        /* 移除 grid 改用 flex 並允許換行 */
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: space-between;
+
+        /* 關鍵修正：高度改為 auto，內容多時會自動撐開 */
         height: auto !important;
+        min-height: 70px;
+        padding: 10px 5%;
     }
 
-    .nav-left {
-        grid-row: 1 / span 2;
-        /* 跨兩行 */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
+    /* 讓左側 Logo 區塊與右側控制區塊佔滿寬度 */
+    .nav-left,
     .nav-right {
+        width: 100%;
+        justify-content: center;
         display: flex;
-        flex-direction: column;
-        gap: 10px;
+        margin-bottom: 5px;
     }
 
+    /* 導覽連結區塊 */
     .nav-links {
-        /* 關鍵修正：取消電腦版的絕對定位，讓 order 生效 */
         position: static !important;
+        /* 移除電腦版的絕對定位 */
         transform: none !important;
-
-        order: 1;
-        /* 熱門推薦在上 */
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 10px;
         width: 100%;
+        justify-content: center !important;
+        padding: 5px 0;
     }
 
+    /* 使用者控制區（登入、歡迎語） */
     .user-controls {
-        order: 2;
-        /* 登入註冊在下 */
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 10px;
         width: 100%;
+        justify-content: center !important;
+        flex-wrap: wrap;
+        /* 讓長名字自動換行 */
+        gap: 10px;
     }
 
     /* 縮小文字防止再次重疊 */
@@ -585,6 +577,11 @@ footer p {
     /* 縮小圖片以利閱讀 */
     .logo-img {
         height: 40px;
+    }
+    /* 增加標題與上方的距離 */
+    section {
+        margin-top: 200px !important; /* 增加數值直到標題顯現 */
+        padding: 20px 0;
     }
 
 }
