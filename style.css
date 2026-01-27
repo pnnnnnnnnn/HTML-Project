@@ -5,25 +5,10 @@
     font-family: sans-serif;
 }
 
-html,
-body {
-    height: 100%;
-    margin: 0;
-    padding: 0
-}
-
 body {
     display: flex;
     flex-direction: column;
     /* 讓內容由上往下排：Header -> Content -> Footer */
-}
-
-/* 假設你外層的 div 沒有 class，可以幫它加一個，例如 class="main-content" */
-.main-content {
-    margin-top: 30px;
-    /* 數值約等於 Navbar 的高度 */
-    flex: 1 0 auto;
-    display: flex;
 }
 
 /* 導覽列排版 */
@@ -211,7 +196,8 @@ footer p {
 }
 
 .cart-footer {
-    margin-top: auto; /* 讓這塊推到最下面 */
+    margin-top: auto;
+    /* 讓這塊推到最下面 */
     padding-top: 20px;
 }
 
@@ -233,40 +219,49 @@ footer p {
 .cart-buttons button {
     flex: 1;
     padding: 12px;
-    border-radius: 10px; /* 更圓潤的圓角 */
+    border-radius: 10px;
+    /* 更圓潤的圓角 */
     border: none;
     cursor: pointer;
     font-weight: bold;
     font-size: 16px;
-    transition: all 0.2s ease; /* 所有變化都要平滑 */
+    transition: all 0.2s ease;
+    /* 所有變化都要平滑 */
     position: relative;
     overflow: hidden;
 }
 
 /* 1. 前往結帳：綠色立體感 */
 .checkout-btn {
-    background: linear-gradient(to bottom, #2ecc71, #27ae60); /* 亮綠到深綠漸層 */
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    /* 亮綠到深綠漸層 */
     color: white;
-    box-shadow: 0 4px 0 #1e8449, 0 8px 15px rgba(0, 0, 0, 0.1); /* 底部深色層產生厚度 */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* 文字微陰影 */
+    box-shadow: 0 4px 0 #1e8449, 0 8px 15px rgba(0, 0, 0, 0.1);
+    /* 底部深色層產生厚度 */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    /* 文字微陰影 */
 }
 
 .checkout-btn:hover {
     background: linear-gradient(to bottom, #42d681, #2ecc71);
-    transform: translateY(-2px); /* 懸停時微升 */
+    transform: translateY(-2px);
+    /* 懸停時微升 */
     box-shadow: 0 6px 0 #1e8449, 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .checkout-btn:active {
-    transform: translateY(2px); /* 點擊時下壓 */
+    transform: translateY(2px);
+    /* 點擊時下壓 */
     box-shadow: 0 2px 0 #1e8449, 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* 2. 關閉按鈕：淺灰色立體感 */
 .close-cart-btn {
-    background: linear-gradient(to bottom, #ffffff, #f0f0f0); /* 白色漸層 */
+    background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+    /* 白色漸層 */
     color: #555;
-    border: 1px solid #ddd !important; /* 淺灰色邊框增加層次 */
+    border: 1px solid #ddd !important;
+    /* 淺灰色邊框增加層次 */
     box-shadow: 0 4px 0 #ccc, 0 8px 15px rgba(0, 0, 0, 0.05);
 }
 
@@ -326,17 +321,21 @@ footer p {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.4); /* 稍微淡一點的黑色遮罩 */
-    backdrop-filter: blur(4px); /* 背景微模糊，更有質感 */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* 稍微淡一點的黑色遮罩 */
+    backdrop-filter: blur(4px);
+    /* 背景微模糊，更有質感 */
 }
 
 /* 2. 視窗本體：改為更圓潤、帶有呼吸感的陰影 */
 .modal-content {
     background: #ffffff;
-    margin: 10vh auto; /* 距離頂部 10% 的視窗高度 */
+    margin: 10vh auto;
+    /* 距離頂部 10% 的視窗高度 */
     padding: 40px 30px;
     width: 100%;
-    max-width: 380px; /* 寬度稍微加寬一點點 */
+    max-width: 380px;
+    /* 寬度稍微加寬一點點 */
     border-radius: 20px;
     text-align: center;
     position: relative;
@@ -346,24 +345,38 @@ footer p {
 }
 
 @keyframes modalSlideUp {
-    from { transform: translateY(30px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 
 /* 註冊/登入 主按鈕優化 */
 #authForm button {
     width: 100%;
-    padding: 12px;           /* 增加垂直高度 */
-    margin: 20px 0 10px 0;   /* 調整間距，上方留白，下方縮小 */
-    border: none;            /* 移除黑框 */
-    border-radius: 12px;     /* 圓潤圓角 */
-    background: #0066cc;     /* 改用實色或微漸層 */
+    padding: 12px;
+    /* 增加垂直高度 */
+    margin: 20px 0 10px 0;
+    /* 調整間距，上方留白，下方縮小 */
+    border: none;
+    /* 移除黑框 */
+    border-radius: 12px;
+    /* 圓潤圓角 */
+    background: #0066cc;
+    /* 改用實色或微漸層 */
     color: white;
-    font-size: 18px;         /* 字體加大，更有力 */
+    font-size: 18px;
+    /* 字體加大，更有力 */
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3); /* 柔和藍色陰影 */
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    /* 柔和藍色陰影 */
     transition: 0.3s;
 }
 
@@ -406,7 +419,9 @@ footer p {
     transition: 0.2s;
 }
 
-.close-btn:hover { color: #333; }
+.close-btn:hover {
+    color: #333;
+}
 
 #authForm input,
 #userGender {
@@ -425,7 +440,8 @@ footer p {
 #userGender:focus {
     border-color: #007bff;
     background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1); /* 藍色光暈 */
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+    /* 藍色光暈 */
 }
 
 /* 如果有姓名與性別並排的結構 (需配合 HTML) */
@@ -486,7 +502,8 @@ footer p {
     background-color: orange;
     box-shadow: 0 5px 0 #d0d0d0;
     /* 陰影加深一點 */
-    box-shadow: 0 0 12px rgba(255, 165, 0, 0.5); /* 橘色發光 */
+    box-shadow: 0 0 12px rgba(255, 165, 0, 0.5);
+    /* 橘色發光 */
 }
 
 .add-to-cart:active {
@@ -494,7 +511,8 @@ footer p {
     /* 向下移動 */
     box-shadow: 0 1px 0 #d0d0d0;
     /* 陰影縮減，模擬壓扁效果 */
-    transform: scale(0.92); /* 點擊時縮小 */
+    transform: scale(0.92);
+    /* 點擊時縮小 */
     transition: transform 0.1s;
 }
 
@@ -657,7 +675,7 @@ footer p {
     }
 
     .main-content {
-        flex-direction: column;
+        margin-top: 0px !important;
     }
 
     .navbar {
@@ -726,11 +744,9 @@ footer p {
         height: 40px;
     }
 
-    /* 增加標題與上方的距離 */
     section {
-        margin-top: 180px !important;
-        /* 增加數值直到標題顯現 */
-        padding: 20px 0;
+        /* 手機版 Navbar 會換行變高，這裡要稍微留空間 */
+        margin-top: 160px !important;
     }
 
     /* 強制彈窗在最前面 */
@@ -750,6 +766,7 @@ footer p {
         z-index: 1000 !important;
     }
 
+
 }
 
 /* 446-457 商品logo調整 */
@@ -768,11 +785,14 @@ footer p {
     width: auto;
 }
 
-/* 針對黃色標題區塊進行調整 */
+/* 1. 修正標題區塊的間距 */
 section {
-    margin-top: 80px;
-    margin-bottom: 20px;
-    padding: 10px 0;
+    /* 這裡原本是 120px，我們把它縮小到剛好能接到 Navbar 下方 */
+    margin-top: 105px !important;
+    /* 35px(公告欄) + 70px(Navbar) */
+    margin-bottom: 0px !important;
+    padding: 10px 0 !important;
+    /* 縮小上下內邊距 */
     width: 100%;
     text-align: center;
 }
@@ -781,18 +801,14 @@ section {
     font-size: 20px;
 }
 
+/* 2. 修正標題本身的邊距 */
 #category-title {
-    margin-bottom: 0 !important;
-    /* 徹底移除文字下方的預設空白 */
-    margin-top: 5px;
-    /* 調整標題與上方 Navbar 的距離 */
-    line-height: 1;
-    /* 縮小文字行高，減少虛擬空間 */
-}
-
-section.text-center {
-    padding-bottom: 0 !important;
-    margin-bottom: 0 !important;
+    margin: 0 !important;
+    /* 移除標題所有預設邊距 */
+    padding: 10px 0;
+    /* 改用 padding 微調手感 */
+    font-size: 2rem;
+    line-height: 1.1;
 }
 
 /* 當分類被選中時 (Active) */
@@ -805,7 +821,8 @@ section.text-center {
 
 .sidebar ul li a:hover:not(.active) {
     background: #fafafa;
-    padding-left: 20px; /* 滑進去的動態感 */
+    padding-left: 20px;
+    /* 滑進去的動態感 */
 }
 
 .user-welcome {
@@ -841,39 +858,30 @@ section.text-center {
 }
 
 @keyframes sidebarBounce {
-    0% { transform: translateX(-5px); }
-    50% { transform: translateX(2px); }
-    100% { transform: translateX(0); }
+    0% {
+        transform: translateX(-5px);
+    }
+
+    50% {
+        transform: translateX(2px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
 }
 
 @keyframes productFadeIn {
     from {
         opacity: 0;
-        transform: translateY(30px); /* 從下方 30px 處升起 */
+        transform: translateY(30px);
+        /* 從下方 30px 處升起 */
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* 購物車每一列商品 */
-.cart-item {
-    display: flex;
-    justify-content: space-between; /* 左右撐開關鍵 */
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #f1f1f1;
-    list-style: none;
-}
-
-/* 每一列商品的容器 */
-.cart-item-container {
-    display: flex;
-    justify-content: space-between; /* 關鍵：這會把左右兩區推開 */
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid #eee;
 }
 
 /* 左側：商品資訊垂直排列 */
@@ -897,8 +905,10 @@ section.text-center {
 /* 右側：操作區 */
 .item-controls {
     display: flex;
-    flex-direction: column; /* 讓加減鈕跟刪除鈕上下排，節省橫向空間 */
-    align-items: flex-end; /* 靠右對齊 */
+    flex-direction: column;
+    /* 讓加減鈕跟刪除鈕上下排，節省橫向空間 */
+    align-items: flex-end;
+    /* 靠右對齊 */
     gap: 10px;
 }
 
@@ -944,7 +954,8 @@ section.text-center {
 /* 左側資訊區：名稱與價格 */
 .item-left {
     display: flex;
-    flex-direction: column; /* 讓價格在名稱下方 */
+    flex-direction: column;
+    /* 讓價格在名稱下方 */
     text-align: left;
     gap: 4px;
 }
@@ -963,8 +974,10 @@ section.text-center {
 /* 右側操作區：數量與刪除 */
 .item-right {
     display: flex;
-    flex-direction: column; /* 讓刪除鈕在加減鈕下方，比較省空間 */
-    align-items: flex-end; /* 靠右對齊 */
+    flex-direction: column;
+    /* 讓刪除鈕在加減鈕下方，比較省空間 */
+    align-items: flex-end;
+    /* 靠右對齊 */
     gap: 8px;
 }
 
@@ -1015,18 +1028,125 @@ section.text-center {
 }
 
 /* 幫前 12 個商品設定排隊時間 */
-.product-card:nth-child(1) { animation-delay: 0.05s; }
-.product-card:nth-child(2) { animation-delay: 0.1s; }
-.product-card:nth-child(3) { animation-delay: 0.15s; }
-.product-card:nth-child(4) { animation-delay: 0.2s; }
-.product-card:nth-child(5) { animation-delay: 0.25s; }
-.product-card:nth-child(6) { animation-delay: 0.3s; }
-.product-card:nth-child(7) { animation-delay: 0.35s; }
-.product-card:nth-child(8) { animation-delay: 0.4s; }
-.product-card:nth-child(9) { animation-delay: 0.45s; }
-.product-card:nth-child(10) { animation-delay: 0.5s; }
-.product-card:nth-child(11) { animation-delay: 0.55s; }
-.product-card:nth-child(12) { animation-delay: 0.6s; }
+.product-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.product-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.product-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.product-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.product-card:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.product-card:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+.product-card:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+.product-card:nth-child(8) {
+    animation-delay: 0.4s;
+}
+
+.product-card:nth-child(9) {
+    animation-delay: 0.45s;
+}
+
+.product-card:nth-child(10) {
+    animation-delay: 0.5s;
+}
+
+.product-card:nth-child(11) {
+    animation-delay: 0.55s;
+}
+
+.product-card:nth-child(12) {
+    animation-delay: 0.6s;
+}
 
 /* 之後的商品就統一延遲 0.6s，避免同時出現太突兀 */
-.product-card:nth-child(n+13) { animation-delay: 0.6s; }
+.product-card:nth-child(n+13) {
+    animation-delay: 0.6s;
+}
+
+/*底下都是跑馬燈設定*/
+/* 1. 公告欄容器 */
+.announcement-bar {
+    background: linear-gradient(90deg, #ff4d4d, #f0932b, #ff4d4d);
+    /* 慶典漸層色 */
+    background-size: 200% auto;
+    color: white;
+    height: 35px;
+    line-height: 35px;
+    font-size: 14px;
+    font-weight: bold;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 3000;
+    /* 層級最高，確保不被蓋住 */
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 2. 跑馬燈封裝層 */
+.marquee-wrapper {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* 3. 跑馬燈動畫本體 */
+.marquee-text {
+    display: inline-block;
+    white-space: nowrap;
+    padding-left: 100%;
+    /* 從右側外面開始 */
+    animation: marquee-scroll 25s linear infinite;
+}
+
+@keyframes marquee-scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* --- 重要修正：調整 Navbar 與內容的位移 --- */
+
+/* 讓原本固定的 Navbar 往下移 35px (公告欄的高度) */
+.navbar {
+    top: 35px !important;
+}
+
+/* 3. 修正主內容區塊的間距 */
+.main-content {
+    /* 原本是 105px 甚至更高，現在因為上面有標題了，
+       我們把 margin-top 設為 0，讓它緊貼標題 */
+    margin-top: 0px !important;
+    padding: 0px 1% 0px 5%;
+    /* 保持原本的左右 padding */
+    display: flex;
+}
+
+/* 修正側邊欄位置 */
+.sidebar {
+    top: 125px !important;
+}
+
