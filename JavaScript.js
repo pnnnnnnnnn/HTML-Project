@@ -97,7 +97,7 @@ window.filterCategory = (targetName) => {
             link.classList.add('active');
         }
     });
-    
+
     const title = document.getElementById('category-title');
     if (title) {
         if (targetName === '全部') title.innerText = '所有商品';
@@ -155,18 +155,19 @@ function updateCartUI() {
     if (!cartList || !cartTotalDisplay) return;
 
     cartList.innerHTML = cart.map((item, index) => `
-        <li style="display: flex; flex-direction: column; padding: 12px; border-bottom: 1px solid #eee;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                <span style="font-weight: bold;">${item.name}</span>
-                <button onclick="removeFromCart(${index})" style="background: none; border: none; color: #ff4d4d; cursor: pointer;">刪除</button>
+        <li class="cart-item">
+            <div class="item-left">
+                <span class="item-name">${item.name}</span>
+                <span class="item-price">$${item.price}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="color: #e44d26;">$${item.price}</div>
-                <div style="display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px;">
-                    <button onclick="changeQty(${index}, -1)" style="width: 28px;">-</button>
-                    <span style="padding: 0 10px;">${item.quantity}</span>
-                    <button onclick="changeQty(${index}, 1)" style="width: 28px;">+</button>
+            
+            <div class="item-right">
+                <div class="qty-control">
+                    <button onclick="changeQty(${index}, -1)">-</button>
+                    <span class="qty-num">${item.quantity}</span>
+                    <button onclick="changeQty(${index}, 1)">+</button>
                 </div>
+                <button class="remove-btn" onclick="removeFromCart(${index})">刪除</button>
             </div>
         </li>`).join('');
 

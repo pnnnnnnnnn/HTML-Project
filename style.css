@@ -108,6 +108,7 @@ body {
     /* 最底層背景 */
     border-radius: 8px;
     height: 100%;
+    animation: productFadeIn 0.6s ease backwards;
 }
 
 .product-card:hover {
@@ -170,7 +171,7 @@ footer p {
 
 /* 購物車背景遮罩 */
 .cart-modal {
-    display: none;
+    display: flex;
     /* 預設隱藏 */
     position: fixed;
     top: 0;
@@ -180,8 +181,17 @@ footer p {
     background: white;
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
     z-index: 9999;
+    padding: 20px;
+    flex-direction: column;
     /* 設為極高，確保在所有商品卡片與導覽列之上 */
 
+}
+
+.cart-modal h2 {
+    font-size: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 /* 購物車內的清單樣式 */
@@ -191,10 +201,84 @@ footer p {
     margin: 20px 0;
 }
 
+/* 購物車內的商品列 */
 #cart-items-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px inset #f9f9f9;
+}
+
+.cart-footer {
+    margin-top: auto; /* 讓這塊推到最下面 */
+    padding-top: 20px;
+}
+
+.cart-total {
+    font-size: 18px;
+    color: #e63946;
+    font-weight: bold;
+    text-align: right;
+    margin-bottom: 15px;
+}
+
+/* 購物車按鈕區塊優化 */
+.cart-buttons {
+    display: flex;
+    gap: 12px;
     padding: 10px 0;
-    border-bottom: 1px solid #eee;
+}
+
+.cart-buttons button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px; /* 更圓潤的圓角 */
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
     font-size: 16px;
+    transition: all 0.2s ease; /* 所有變化都要平滑 */
+    position: relative;
+    overflow: hidden;
+}
+
+/* 1. 前往結帳：綠色立體感 */
+.checkout-btn {
+    background: linear-gradient(to bottom, #2ecc71, #27ae60); /* 亮綠到深綠漸層 */
+    color: white;
+    box-shadow: 0 4px 0 #1e8449, 0 8px 15px rgba(0, 0, 0, 0.1); /* 底部深色層產生厚度 */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* 文字微陰影 */
+}
+
+.checkout-btn:hover {
+    background: linear-gradient(to bottom, #42d681, #2ecc71);
+    transform: translateY(-2px); /* 懸停時微升 */
+    box-shadow: 0 6px 0 #1e8449, 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.checkout-btn:active {
+    transform: translateY(2px); /* 點擊時下壓 */
+    box-shadow: 0 2px 0 #1e8449, 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 2. 關閉按鈕：淺灰色立體感 */
+.close-cart-btn {
+    background: linear-gradient(to bottom, #ffffff, #f0f0f0); /* 白色漸層 */
+    color: #555;
+    border: 1px solid #ddd !important; /* 淺灰色邊框增加層次 */
+    box-shadow: 0 4px 0 #ccc, 0 8px 15px rgba(0, 0, 0, 0.05);
+}
+
+.close-cart-btn:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #ccc, 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.close-cart-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #ccc, 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 /* 修改後的側邊欄 CSS */
@@ -217,12 +301,12 @@ footer p {
 
 /* 確保側邊欄連結不換行 */
 .sidebar ul li a {
-    white-space: nowrap;
-    /* 強制文字不換行 */
-    display: block;
-    padding: 8px 0;
-    text-decoration: none;
-    color: #333;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .sidebar ul li a:hover {
@@ -233,71 +317,122 @@ footer p {
 }
 
 /* 彈出視窗美化 156-192列 */
-/* 彈窗背景 */
+/* 1. 彈窗背景遮罩 */
 .modal {
     display: none;
-    /* 預設隱藏 */
     position: fixed;
     z-index: 5000;
-    /* 最高的層級，確保蓋住購物車 */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.4); /* 稍微淡一點的黑色遮罩 */
+    backdrop-filter: blur(4px); /* 背景微模糊，更有質感 */
 }
 
-/* 視窗本體 */
+/* 2. 視窗本體：改為更圓潤、帶有呼吸感的陰影 */
 .modal-content {
-    background: white;
-    margin: 10% auto;
-    padding: 30px;
-    width: 300px;
-    border-radius: 15px;
+    background: #ffffff;
+    margin: 10vh auto; /* 距離頂部 10% 的視窗高度 */
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 380px; /* 寬度稍微加寬一點點 */
+    border-radius: 20px;
     text-align: center;
     position: relative;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    /* 增加整體的輕微陰影 */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+    animation: modalSlideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-#authForm button,
+@keyframes modalSlideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+/* 註冊/登入 主按鈕優化 */
+#authForm button {
+    width: 100%;
+    padding: 12px;           /* 增加垂直高度 */
+    margin: 20px 0 10px 0;   /* 調整間距，上方留白，下方縮小 */
+    border: none;            /* 移除黑框 */
+    border-radius: 12px;     /* 圓潤圓角 */
+    background: #0066cc;     /* 改用實色或微漸層 */
+    color: white;
+    font-size: 18px;         /* 字體加大，更有力 */
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3); /* 柔和藍色陰影 */
+    transition: 0.3s;
+}
+
+#authForm button:hover {
+    background: #0052a3;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(0, 102, 204, 0.4);
+}
+
+#authForm button:active {
+    transform: translateY(0);
+}
+
+/* 切換模式按鈕：改為清爽的文字連結風格 */
 #switchModeBtn {
-    width: 50%;
-    box-sizing: border-box;
-    border-radius: 10px;
-    box-shadow: 0 4px 0 #d0d0d0;
+    width: auto;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    color: #666;
+    font-size: 14px;
+    margin-top: 20px;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: 0.2s;
+}
+
+#switchModeBtn:hover {
+    color: #007bff;
 }
 
 /* 關閉按鈕 */
 .close-btn {
     position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 28px;
+    right: 20px;
+    top: 15px;
+    font-size: 24px;
+    color: #aaa;
     cursor: pointer;
+    transition: 0.2s;
 }
 
-
-
-#userGender {
-    background-color: white;
-    cursor: pointer;
-    font-size: 14px;
-    height: 46px;
-    /* 配合你 input 的高度 */
-    margin: 10px 0;
-}
+.close-btn:hover { color: #333; }
 
 #authForm input,
 #userGender {
     width: 100%;
-    margin: 8px 0;
-    /* 統一間距 */
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-sizing: border-box;
-    /* 確保寬度包含 padding */
+    margin: 10px 0;
+    padding: 12px 15px;
+    border: 1.5px solid #eee;
+    border-radius: 10px;
+    font-size: 15px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+#authForm input:focus,
+#userGender:focus {
+    border-color: #007bff;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1); /* 藍色光暈 */
+}
+
+/* 如果有姓名與性別並排的結構 (需配合 HTML) */
+.form-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
 }
 
 .swal2-container {
@@ -351,6 +486,7 @@ footer p {
     background-color: orange;
     box-shadow: 0 5px 0 #d0d0d0;
     /* 陰影加深一點 */
+    box-shadow: 0 0 12px rgba(255, 165, 0, 0.5); /* 橘色發光 */
 }
 
 .add-to-cart:active {
@@ -358,6 +494,8 @@ footer p {
     /* 向下移動 */
     box-shadow: 0 1px 0 #d0d0d0;
     /* 陰影縮減，模擬壓扁效果 */
+    transform: scale(0.92); /* 點擊時縮小 */
+    transition: transform 0.1s;
 }
 
 /* 原價：灰色 + 劃線 */
@@ -657,13 +795,17 @@ section.text-center {
     margin-bottom: 0 !important;
 }
 
-/* 讓被選中的分類變色且加粗 */
+/* 當分類被選中時 (Active) */
 .sidebar ul li a.active {
-    color: #007bff !important;
+    background: #f0f7ff;
+    color: #007bff;
     font-weight: bold;
-    border-left: 3px solid #007bff;
-    /* 增加一個左側小藍條，更有質感 */
-    padding-left: 10px !important;
+    border-left: 4px solid #007bff;
+}
+
+.sidebar ul li a:hover:not(.active) {
+    background: #fafafa;
+    padding-left: 20px; /* 滑進去的動態感 */
 }
 
 .user-welcome {
@@ -697,3 +839,194 @@ section.text-center {
     text-decoration: none;
     font-size: 20px;
 }
+
+@keyframes sidebarBounce {
+    0% { transform: translateX(-5px); }
+    50% { transform: translateX(2px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes productFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px); /* 從下方 30px 處升起 */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 購物車每一列商品 */
+.cart-item {
+    display: flex;
+    justify-content: space-between; /* 左右撐開關鍵 */
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #f1f1f1;
+    list-style: none;
+}
+
+/* 每一列商品的容器 */
+.cart-item-container {
+    display: flex;
+    justify-content: space-between; /* 關鍵：這會把左右兩區推開 */
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* 左側：商品資訊垂直排列 */
+.item-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.item-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.item-price {
+    color: #d9534f;
+    margin-top: 5px;
+}
+
+/* 右側：操作區 */
+.item-controls {
+    display: flex;
+    flex-direction: column; /* 讓加減鈕跟刪除鈕上下排，節省橫向空間 */
+    align-items: flex-end; /* 靠右對齊 */
+    gap: 10px;
+}
+
+/* 加減按鈕群組 */
+.quantity-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.quantity-group button {
+    background: #f8f9fa;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.quantity-group input {
+    width: 40px;
+    text-align: center;
+    border: none;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+/* 刪除按鈕 */
+.delete-btn {
+    background: none;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+}
+
+.delete-btn:hover {
+    text-decoration: underline;
+}
+
+
+/* 左側資訊區：名稱與價格 */
+.item-left {
+    display: flex;
+    flex-direction: column; /* 讓價格在名稱下方 */
+    text-align: left;
+    gap: 4px;
+}
+
+.item-name {
+    font-weight: bold;
+    font-size: 15px;
+    color: #333;
+}
+
+.item-price {
+    color: #e63946;
+    font-size: 14px;
+}
+
+/* 右側操作區：數量與刪除 */
+.item-right {
+    display: flex;
+    flex-direction: column; /* 讓刪除鈕在加減鈕下方，比較省空間 */
+    align-items: flex-end; /* 靠右對齊 */
+    gap: 8px;
+}
+
+/* 數量控制組合 */
+.qty-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.qty-control button {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: #f8f8f8;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.qty-control button:hover {
+    background: #eee;
+}
+
+.qty-num {
+    padding: 0 12px;
+    font-size: 14px;
+    min-width: 35px;
+    text-align: center;
+}
+
+/* 刪除文字鈕 */
+.remove-btn {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.remove-btn:hover {
+    color: #ff4d4d;
+}
+
+/* 幫前 12 個商品設定排隊時間 */
+.product-card:nth-child(1) { animation-delay: 0.05s; }
+.product-card:nth-child(2) { animation-delay: 0.1s; }
+.product-card:nth-child(3) { animation-delay: 0.15s; }
+.product-card:nth-child(4) { animation-delay: 0.2s; }
+.product-card:nth-child(5) { animation-delay: 0.25s; }
+.product-card:nth-child(6) { animation-delay: 0.3s; }
+.product-card:nth-child(7) { animation-delay: 0.35s; }
+.product-card:nth-child(8) { animation-delay: 0.4s; }
+.product-card:nth-child(9) { animation-delay: 0.45s; }
+.product-card:nth-child(10) { animation-delay: 0.5s; }
+.product-card:nth-child(11) { animation-delay: 0.55s; }
+.product-card:nth-child(12) { animation-delay: 0.6s; }
+
+/* 之後的商品就統一延遲 0.6s，避免同時出現太突兀 */
+.product-card:nth-child(n+13) { animation-delay: 0.6s; }
