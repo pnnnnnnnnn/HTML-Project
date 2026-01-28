@@ -321,7 +321,7 @@ footer p {
 .modal {
     display: none;
     position: fixed;
-    z-index: 5000;
+    z-index: 10005;
     left: 0;
     top: 0;
     width: 100%;
@@ -457,7 +457,7 @@ footer p {
 }
 
 .swal2-container {
-    z-index: 3000 !important;
+    z-index: 20000 !important;
 }
 
 /* 關鍵修正：縮小商品名稱字體 */
