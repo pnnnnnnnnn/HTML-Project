@@ -1,11 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import {
-    getFirestore, doc, getDoc, setDoc,
-    collection, addDoc, query, where, getDocs
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 接下來接原本的全域變數定義 ---
+// ==========================================
+// 1. 全域變數與資料定義
+// ==========================================
 let db, auth;
 let isLoginMode = true;
 let cart = [];
@@ -16,37 +15,72 @@ const colorMap = {
 };
 
 const baseTemplates = [
-    { id: "sweatshirt", name: "重磅落肩大學T", price: 880, cats: ["上衣", "本季新品", "城市休閒", "熱門推薦"] },
-    { id: "windbreaker", name: "機能防風連帽外套", price: 1680, cats: ["外套", "機能運動", "熱門"] },
-    { id: "cargo-pants", name: "工裝多口袋長褲", price: 1350, cats: ["褲子", "本季新品", "城市休閒"] },
-    { id: "sport-tee", name: "抗UV涼感訓練衫", price: 750, cats: ["上衣", "機能運動", "限時特惠"] },
-    { id: "suit-pants", name: "俐落九分西裝褲", price: 1100, cats: ["褲子", "城市休閒"] },
-    { id: "down-jacket", name: "極地保暖羽絨外套", price: 3200, cats: ["外套", "本季新品"] },
-    { id: "baseball-cap", name: "低調刺繡棒球帽", price: 550, cats: ["配件", "熱門", "限時特惠", "熱門推薦"] },
-    { id: "side-bag", name: "城市旅行側背小包", price: 890, cats: ["配件", "本季新品", "熱門推薦"] },
-    { id: "oxford-shirt", name: "修身純棉長袖襯衫", price: 1050, cats: ["上衣", "城市休閒"] },
-    { id: "joggers", name: "彈性束口運動褲", price: 950, cats: ["褲子", "機能運動", "熱門"] }
+    {
+        id: "sweatshirt", name: "重磅落肩大學T", price: 880, cats: ["上衣", "本季新品", "城市休閒", "熱門推薦"],
+        desc: "選用 420g 重磅純棉面料，落肩寬鬆剪裁，不僅親膚舒適更具立體感，是秋冬穿搭的必備基礎單品。"
+    },
+    {
+        id: "windbreaker", name: "機能防風連帽外套", price: 1680, cats: ["外套", "機能運動", "熱門"],
+        desc: "採用超輕量防風材質，結合 DWR 撥水技術，內裡透氣網布不悶熱，適合戶外運動與都市通勤。"
+    },
+    {
+        id: "cargo-pants", name: "工裝多口袋長褲", price: 1350, cats: ["褲子", "本季新品", "城市休閒"],
+        desc: "立體大口袋設計兼具實用與帥氣，耐磨抗撕裂面料，讓您在城市與戶外間切換自如。"
+    },
+    {
+        id: "sport-tee", name: "抗UV涼感訓練衫", price: 750, cats: ["上衣", "機能運動", "限時特惠"],
+        desc: "科技涼感纖維有效降低體感溫度，具備 UPF50+ 防曬功能，是夏季高強度運動的最佳夥伴。"
+    },
+    {
+        id: "suit-pants", name: "俐落九分西裝褲", price: 1100, cats: ["褲子", "城市休閒"],
+        desc: "專為亞洲身型打造的九分比例，修飾腿型顯高顯瘦，抗皺材質免燙即可擁有挺括質感。"
+    },
+    {
+        id: "down-jacket", name: "極地保暖羽絨外套", price: 3200, cats: ["外套", "本季新品"],
+        desc: "高品質 90/10 羽絨填充，極高蓬鬆度鎖住體溫，防滲水外殼輕鬆應對濕冷氣候。"
+    },
+    {
+        id: "baseball-cap", name: "低調刺繡棒球帽", price: 550, cats: ["配件", "熱門", "限時特惠", "熱門推薦"],
+        desc: "經典六分割版型，精緻品牌刺繡細節，可調節扣環適合各種頭圍，為造型畫龍點睛。"
+    },
+    {
+        id: "side-bag", name: "城市旅行側背小包", price: 890, cats: ["配件", "本季新品", "熱門推薦"],
+        desc: "防潑水尼龍材質，多層次收納空間可放入手機、錢包與小物，輕鬆出門無負擔。"
+    },
+    {
+        id: "oxford-shirt", name: "修身純棉長袖襯衫", price: 1050, cats: ["上衣", "城市休閒"],
+        desc: "精選長絨棉織造，手感紮實親膚，修身剪裁展現俐落線條，單穿或作為層次搭配皆宜。"
+    },
+    {
+        id: "joggers", name: "彈性束口運動褲", price: 950, cats: ["褲子", "機能運動", "熱門"],
+        desc: "四面彈力面料讓活動不受限，束口設計修飾踝部線條，兼顧運動機能與街頭美學。"
+    }
 ];
 
 const products = [];
 baseTemplates.forEach((template) => {
     Object.keys(colorMap).forEach((color) => {
         const isSale = template.cats.includes("限時特惠");
+
         products.push({
             name: `${color} ${template.name}`,
             price: template.price,
             originalPrice: isSale ? Math.floor(template.price * 1.4) : null,
             categories: ["全部", ...template.cats],
-            image: `images/${template.id}/${template.id}-${colorMap[color]}.png`
+            image: `images/${template.id}/${template.id}-${colorMap[color]}.png`,
+
+            // --- 這裡就是你要加的改動 ---
+            // 結合當前的「顏色」與該模板的「簡介」
+            description: `這款【${color}】${template.name}，${template.desc}`
         });
     });
 });
 
-// --- 2. 初始化 App (從後端拿配置) ---
+// ==========================================
+// 2. 初始化 App
+// ==========================================
 async function startApp() {
-    // 優先顯示商品，避免載入 Firebase 時空白
     filterCategory('全部');
-
     try {
         const res = await fetch('/api/config');
         const config = await res.json();
@@ -54,24 +88,20 @@ async function startApp() {
         db = getFirestore(app);
         auth = getAuth(app);
 
-        // 監聽登入狀態
         onAuthStateChanged(auth, async (user) => {
             const loginBtn = document.querySelector(".login-register-btn");
             const logoutBtn = document.getElementById("logoutBtn");
-            const historyBtn = document.getElementById("historyBtn"); // 1. 抓取按鈕
+            const historyBtn = document.getElementById("historyBtn");
 
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
                     updateAuthUI(userData.name, userData.gender);
-
-                    // 2. 登入成功後，顯示按鈕
                     if (historyBtn) historyBtn.style.display = "inline";
                     if (logoutBtn) logoutBtn.style.display = "inline";
                 }
             } else {
-                // 3. 登出後，隱藏按鈕
                 if (loginBtn) {
                     loginBtn.innerText = "登入/註冊";
                     loginBtn.style.pointerEvents = "auto";
@@ -81,18 +111,17 @@ async function startApp() {
             }
         });
     } catch (err) {
-        console.error("Firebase 初始化失敗，請檢查 server.js 是否啟動:", err);
+        console.error("Firebase 初始化失敗:", err);
     }
 }
 
-// --- 3. 商品渲染功能 ---
+// ==========================================
+// 3. 商品渲染與詳情功能
+// ==========================================
 window.filterCategory = (targetName) => {
-
     const navLinks = document.querySelectorAll('.sidebar ul li a');
     navLinks.forEach(link => {
-        // 移除所有人的 active 類別
         link.classList.remove('active');
-        // 如果連結文字包含 targetName，就加上 active (處理包含表情符號的情況)
         if (link.innerText.includes(targetName) || (targetName === '全部' && link.innerText.includes('所有商品'))) {
             link.classList.add('active');
         }
@@ -118,24 +147,66 @@ window.filterCategory = (targetName) => {
                 : `<p class="product-price">$ ${item.price}</p>`;
 
             container.innerHTML += `
-            <div class="product-card" style="position: relative;">
-                ${hotBadge}
-                <div class="product-info-top">
-                    <div class="product-img-container" style="height: 200px; display: flex; justify-content: center; align-items: center; background: #f8f8f8;">
-                        <img src="${item.image}" alt="${item.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                <div class="product-card" style="position: relative;">
+                    ${hotBadge}
+                    <div class="product-info-top" onclick="openProductDetail(${originalIndex})" style="cursor: pointer;">
+                        <div class="product-img-container" style="height: 200px; display: flex; justify-content: center; align-items: center; background: #f8f8f8;">
+                            <img src="${item.image}" alt="${item.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        </div>
+                        <h3>${item.name}</h3>
                     </div>
-                    <h3>${item.name}</h3>
-                </div>
-                <div class="product-info-bottom">
-                    ${priceDisplay}
-                    <button class="add-to-cart" onclick="addToCart(${originalIndex})">加入購物車</button>
-                </div>
-            </div>`;
+                    <div class="product-info-bottom">
+                        ${priceDisplay}
+                        <button class="add-to-cart" onclick="addToCart(${originalIndex})">加入購物車</button>
+                    </div>
+                </div>`;
         }
     });
 };
 
-// --- 4. 購物車邏輯 ---
+// 開啟商品詳情彈窗
+// --- 找到這一段並修改 ---
+window.openProductDetail = (index) => {
+    const item = products[index];
+    const detailContent = document.getElementById('detail-content');
+    if (!detailContent) return;
+
+    detailContent.innerHTML = `
+    <div class="col-md-6">
+        <img src="${item.image}" alt="${item.name}">
+    </div>
+    <div class="col-md-6">
+        <h2>${item.name}</h2>
+        <div class="category-pills">
+            ${item.categories.filter(c => c !== "全部").map(c => `<span class="category-pill">${c}</span>`).join('')}
+        </div>
+        
+        <h3>
+            <span class="price-symbol">$</span>
+            <span class="price-amount">${item.price}</span> 
+            <span class="special-offer-tag">🔥 限時特價</span>
+        </h3>
+        
+        <div class="detail-description-box">
+            <p><strong>💡 商品簡介</strong></p>
+            <p>${item.description}</p> 
+        </div>
+
+        <button class="add-to-cart" onclick="addToCart(${index}); closeProductDetail();">
+            <span>加入購物車</span>
+        </button>
+    </div>
+`;
+    document.getElementById('product-detail-modal').style.display = 'block';
+};
+
+window.closeProductDetail = () => {
+    document.getElementById('product-detail-modal').style.display = 'none';
+};
+
+// ==========================================
+// 4. 購物車邏輯
+// ==========================================
 window.addToCart = (index) => {
     Swal.fire({ icon: 'success', title: '已加入購物車', timer: 1000, showConfirmButton: false, toast: true, position: 'top-end' });
     const product = products[index];
@@ -145,11 +216,9 @@ window.addToCart = (index) => {
     updateCartUI();
 };
 
-// 計算折扣邏輯
 function calculateDiscount(totalPrice) {
     let finalPrice = totalPrice;
     let discountName = "無折扣";
-
     if (totalPrice >= 12120) {
         finalPrice = totalPrice * 0.7;
         discountName = "雙12盛典滿額 7 折";
@@ -157,27 +226,23 @@ function calculateDiscount(totalPrice) {
         finalPrice = totalPrice * 0.88;
         discountName = "全館狂歡 88 折";
     }
-
     return {
-        finalPrice: Math.round(finalPrice), // 四捨五入
+        finalPrice: Math.round(finalPrice),
         discountName: discountName,
         saved: Math.round(totalPrice - finalPrice)
     };
 }
 
 function updateCartUI() {
-    // 1. 抓取購物車數字圖示
     const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const badge = document.querySelector('.cart-count');
     if (badge) badge.innerText = totalCount;
 
-    // 2. 抓取容器
     const cartList = document.getElementById('cart-items-list');
     const cartTotalDisplay = document.getElementById('cart-total');
     if (!cartList || !cartTotalDisplay) return;
 
-    // 3. 渲染商品清單
-    cartList.innerHTML = cart.map((item, index) => `
+    cartList.innerHTML = cart.length ? cart.map((item, index) => `
         <li class="cart-item">
             <div class="item-left">
                 <span class="item-name">${item.name}</span>
@@ -189,41 +254,28 @@ function updateCartUI() {
                     <span class="qty-num">${item.quantity}</span>
                     <button onclick="changeQty(${index}, 1)">+</button>
                 </div>
-                <button class="remove-btn" style="color:red; background:none; border:none; cursor:pointer;" onclick="removeFromCart(${index})">刪除</button>
+                <button class="remove-btn" onclick="removeFromCart(${index})">刪除</button>
             </div>
-        </li>`).join('');
+        </li>`).join('') : `<li style="text-align:center; color:#999; padding: 40px 0;">您的購物車目前是空的 🛒</li>`;
 
-    // 4. 計算總金額與折扣
     const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const result = calculateDiscount(totalPrice); 
+    const result = calculateDiscount(totalPrice);
 
-    // 5. 計算湊單進度 (goalText)
-    const nextLevelGoal = 12120;
-    let goalText = "";
-    if (totalPrice > 0 && totalPrice < nextLevelGoal) {
-        const diff = nextLevelGoal - totalPrice;
-        goalText = `
-            <div style="background: #fff3f3; padding: 10px; border-radius: 8px; font-size: 0.9rem; color: #d00; margin-bottom: 15px; border: 1px dashed #d00; text-align: center;">
-                🔥 再買 <strong>$${diff}</strong> 即可享有 <strong style="font-size: 1.1rem;">7 折</strong> 優惠！
-            </div>`;
-    }
-
-    // 6. 將所有資訊組合進畫面的總計區塊
     if (totalPrice > 0) {
+        const nextGoal = 12120;
+        const goalText = totalPrice < nextGoal ? `
+            <div class="promo-hint">🔥 再買 <strong>$${nextGoal - totalPrice}</strong> 即可享有 <strong>7 折</strong>！</div>` : "";
+
         cartTotalDisplay.innerHTML = `
-            ${goalText} 
+            ${goalText}
             <div style="font-size: 0.9rem; color: #777;">原價總計：$ ${totalPrice}</div>
             <div style="font-size: 0.9rem; color: #e63946;">套用優惠：${result.discountName}</div>
-            <div style="font-size: 1.3rem; font-weight: bold; color: #333; margin-top: 8px;">
-                應付總額：$ ${result.finalPrice}
-            </div>
-            <div style="font-size: 0.85rem; color: #28a745; font-weight: 500;">(已為您節省 $ ${result.saved})</div>
-        `;
+            <div style="font-size: 1.3rem; font-weight: bold; margin-top: 8px;">應付總額：$ ${result.finalPrice}</div>
+            <div style="font-size: 0.85rem; color: #28a745;">(已省下 $ ${result.saved})</div>`;
     } else {
         cartTotalDisplay.innerText = `總計金額：$ 0`;
-        cartList.innerHTML = `<li style="text-align:center; color:#999; padding: 40px 0;">您的購物車目前是空的 🛒</li>`;
     }
-} // <-- 確保這裡只有一個關閉的大括號
+}
 
 window.changeQty = (index, delta) => {
     if (cart[index].quantity + delta > 0) cart[index].quantity += delta;
@@ -234,23 +286,17 @@ window.removeFromCart = (index) => { cart.splice(index, 1); updateCartUI(); };
 window.openCart = () => { document.getElementById('cart-modal').style.display = 'block'; };
 window.closeCart = () => { document.getElementById('cart-modal').style.display = 'none'; };
 
-// --- 5. 會員登入註冊 ---
-const authModal = document.getElementById('authModal');
-window.openAuthModal = () => { authModal.style.display = 'block'; };
-document.querySelector('.close-btn').onclick = () => { authModal.style.display = 'none'; };
-
+// ==========================================
+// 5. 會員與購買紀錄
+// ==========================================
 function updateAuthUI(name, gender) {
     const loginBtn = document.querySelector(".login-register-btn");
     if (loginBtn) {
-        // 加上 <span class="user-welcome"> 來控制顏色
         loginBtn.innerHTML = `<span class="user-welcome">您好，${name}${gender}</span>`;
         loginBtn.style.pointerEvents = "none";
-        loginBtn.style.textDecoration = "none"; // 移除底線
     }
     const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.style.display = "inline";
-    }
+    if (logoutBtn) logoutBtn.style.display = "inline";
 }
 
 document.getElementById("switchModeBtn").onclick = () => {
@@ -284,160 +330,81 @@ document.getElementById('authForm').onsubmit = async (e) => {
 window.handleLogout = async () => {
     await signOut(auth);
     alert("您已成功登出");
+    location.reload();
 };
 
-// --- 6. 結帳邏輯 (含登入檢查) ---
+window.showOrderHistory = async () => {
+    if (!auth.currentUser) return Swal.fire('請先登入', '', 'info');
+    Swal.fire({ title: '讀取紀錄中...', didOpen: () => Swal.showLoading() });
+
+    try {
+        const q = query(collection(db, "orders"), where("userId", "==", auth.currentUser.uid));
+        const querySnapshot = await getDocs(q);
+        let html = '<div style="text-align: left; max-height: 400px; overflow-y: auto;">';
+
+        if (querySnapshot.empty) {
+            html += '<p style="text-align:center;">尚無購買紀錄。</p>';
+        } else {
+            const docs = [];
+            querySnapshot.forEach(doc => docs.push(doc.data()));
+            docs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            docs.forEach(order => {
+                html += `
+                    <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                        <small>${new Date(order.timestamp).toLocaleString()}</small>
+                        <div style="font-weight:bold; color:#e44d26;">金額：$ ${order.totalAmount}</div>
+                        <ul style="font-size:0.85rem;">${order.items.map(i => `<li>${i.name} x${i.quantity}</li>`).join('')}</ul>
+                    </div>`;
+            });
+        }
+        Swal.fire({ title: '購買紀錄', html: html + '</div>' });
+    } catch (err) { Swal.fire('錯誤', '無法讀取紀錄', 'error'); }
+};
+
+// ==========================================
+// 6. 結帳與其他
+// ==========================================
 window.checkout = async () => {
-    // 1. 檢查登入 (保持不變)
-    if (!auth || !auth.currentUser) {
-        Swal.fire({
-            title: '請先登入',
-            text: '您必須登入後才能進行結帳',
-            icon: 'warning',
-            confirmButtonText: '前往登入'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                closeCart();
-                openAuthModal();
-            }
+    if (!auth?.currentUser) {
+        return Swal.fire({ title: '請先登入', icon: 'warning', confirmButtonText: '前往登入' }).then(r => {
+            if (r.isConfirmed) { closeCart(); openAuthModal(); }
         });
-        return;
     }
 
-    // 2. 檢查購物車並計算折扣
     const originalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    if (originalPrice <= 0) {
-        Swal.fire('購物車是空的', '請先挑選商品再結帳', 'warning');
-        return;
-    }
+    if (originalPrice <= 0) return Swal.fire('購物車是空的', '', 'warning');
 
-    // --- ✨ 新增：取得折扣後的最終金額與資訊 ✨ ---
-    const discountResult = calculateDiscount(originalPrice);
-    const finalPayAmount = discountResult.finalPrice; // 這才是真正要付的錢
-
+    const disc = calculateDiscount(originalPrice);
     const result = await Swal.fire({
         title: '確認結帳',
-        html: `
-            <div style="text-align: left;">
-                <p>商品原價：$${originalPrice}</p>
-                <p style="color: #e63946;">活動優惠：${discountResult.discountName}</p>
-                <hr>
-                <p style="font-size: 1.2rem; font-weight: bold;">應付總額：$${finalPayAmount}</p>
-                <p style="font-size: 0.8rem; color: #777;">即將跳轉至綠界測試刷卡頁面</p>
-            </div>
-        `,
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: '確定付款',
-        cancelButtonText: '再考慮一下'
+        html: `<p>商品原價：$${originalPrice}</p><p style="color:red;">優惠：${disc.discountName}</p><hr><h4>總額：$${disc.finalPrice}</h4>`,
+        showCancelButton: true
     });
 
     if (result.isConfirmed) {
         try {
             Swal.showLoading();
-
-            // --- 修改：將「折扣後金額」存入 Firebase ---
             await addDoc(collection(db, "orders"), {
                 userId: auth.currentUser.uid,
-                items: cart.map(item => ({
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity
-                })),
-                totalAmount: finalPayAmount, // 這裡存的是折後的錢
-                discountInfo: discountResult.discountName, // 順便紀錄用了什麼折扣
+                items: cart.map(i => ({ name: i.name, price: i.price, quantity: i.quantity })),
+                totalAmount: disc.finalPrice,
                 timestamp: new Date().toISOString(),
-                status: "已送出訂單(待付款)"
+                status: "待付款"
             });
 
-            // --- 修改：呼叫後端 API 時傳送「折扣後金額」 ---
-            const response = await fetch('/api/checkout', {
+            const res = await fetch('/api/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: finalPayAmount }) // 傳送折後的錢
+                body: JSON.stringify({ amount: disc.finalPrice })
             });
-
-            const data = await response.json();
-            const checkoutContainer = document.createElement('div');
-            checkoutContainer.innerHTML = data.html;
-            document.body.appendChild(checkoutContainer);
-
-            // 清空購物車
-            cart = [];
-            updateCartUI();
-            closeCart();
-
-            // 執行綠界表單跳轉
-            const form = checkoutContainer.querySelector('form');
-            if (form) form.submit();
-
-        } catch (error) {
-            console.error("結帳發生錯誤:", error);
-            Swal.fire('系統錯誤', `無法處理訂單: ${error.message}`, 'error');
-        }
+            const data = await res.json();
+            const div = document.createElement('div');
+            div.innerHTML = data.html;
+            document.body.appendChild(div);
+            div.querySelector('form').submit();
+        } catch (err) { Swal.fire('結帳失敗', err.message, 'error'); }
     }
 };
-
-//查詢紀錄
-window.showOrderHistory = async () => {
-    // 檢查是否登入
-    if (!auth.currentUser) {
-        Swal.fire('請先登入', '登入後即可查看您的購買紀錄', 'info');
-        return;
-    }
-
-    Swal.fire({ title: '正在讀取紀錄...', didOpen: () => Swal.showLoading() });
-
-    try {
-        // 從 orders 集合中查詢 userId 等於當前使用者的資料
-        const q = query(
-            collection(db, "orders"),
-            where("userId", "==", auth.currentUser.uid)
-        );
-
-        const querySnapshot = await getDocs(q);
-
-        let html = '<div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 10px;">';
-
-        if (querySnapshot.empty) {
-            html += '<p style="text-align:center; color:#888;">尚無任何購買紀錄。</p>';
-        } else {
-            // 將紀錄依照時間排序（或是由前端處理排序）
-            const docs = [];
-            querySnapshot.forEach(doc => docs.push(doc.data()));
-            docs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-            docs.forEach((order) => {
-                const date = new Date(order.timestamp).toLocaleString();
-                html += `
-                    <div style="border-bottom: 1px solid #eee; margin-bottom: 15px; padding-bottom: 10px;">
-                        <div style="font-size: 0.8rem; color: #777;">購買日期：${date}</div>
-                        <div style="font-weight: bold; color: #e44d26; margin: 5px 0;">總計金額：$ ${order.totalAmount}</div>
-                        <ul style="list-style: none; padding-left: 0; font-size: 0.9rem;">
-                            ${order.items.map(item => `
-                                <li style="display: flex; justify-content: space-between;">
-                                    <span>${item.name}</span>
-                                    <span>x${item.quantity}</span>
-                                </li>`).join('')}
-                        </ul>
-                    </div>`;
-            });
-        }
-        html += '</div>';
-
-        Swal.fire({
-            title: '我的購買紀錄',
-            html: html,
-            confirmButtonText: '關閉',
-            confirmButtonColor: '#333'
-        });
-
-    } catch (error) {
-        console.error("讀取紀錄失敗:", error);
-        Swal.fire('錯誤', '暫時無法取得紀錄，請稍後再試', 'error');
-    }
-};
-
 
 // 關於我們
 window.openAboutModal = () => {
@@ -458,14 +425,42 @@ window.openAboutModal = () => {
     });
 };
 
-// 關閉購物車監聽全域按鍵事件
+// 全域 Esc 關閉彈窗
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeCart();
-        // 如果有會員登入視窗，也可以順便關閉
-        if (typeof authModal !== 'undefined') authModal.style.display = 'none';
+        closeProductDetail();
+        if (authModal) authModal.style.display = 'none';
     }
 });
 
-// 啟動程式
+// 統一使用一個函式來處理，HTML 中的 onclick="toggleMenu()" 會呼叫這裡
+window.toggleMenu = (e) => {
+    // 如果是從事件觸發，防止冒泡（避免點擊事件傳到 document 導致選單關閉）
+    if (e) e.stopPropagation();
+
+    // 建議使用 querySelector 比較保險，對應你的 HTML 結構
+    const navLinks = document.querySelector('.nav-links');
+    const menuToggle = document.querySelector('.menu-toggle');
+
+    if (navLinks && menuToggle) {
+        navLinks.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+        console.log("選單狀態:", navLinks.classList.contains('active'));
+    }
+};
+
+// 處理點擊選單外部關閉選單
+document.addEventListener('click', (e) => {
+    const navLinks = document.querySelector('.nav-links');
+    const menuToggle = document.querySelector('.menu-toggle');
+    
+    // 如果點擊的地方不是選單本身，也不是漢堡按鈕，就關閉
+    if (navLinks && navLinks.classList.contains('active')) {
+        if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+            navLinks.classList.remove('active');
+            menuToggle.classList.remove('active');
+        }
+    }
+});
 startApp();

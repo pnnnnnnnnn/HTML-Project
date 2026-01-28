@@ -16,7 +16,7 @@
     <div class="announcement-bar">
         <div class="marquee-wrapper">
             <span class="marquee-text">
-                🎊 雙 12 盛典狂歡開跑！全館 88 折起，消費滿 $1,2120元7折起!! 
+                🎊 雙 12 盛典狂歡開跑！全館 88 折，消費滿 $1,2120元7折!!
             </span>
         </div>
     </div>
@@ -26,12 +26,18 @@
             <span>購物商城</span>
         </div>
 
-        <div class="nav-right">
+        <div class="menu-toggle" id="mobile-menu" onclick="toggleMenu()">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <div class="nav-right" id="nav-content">
             <div class="nav-links">
-                <a href="#" onclick="filterCategory('熱門推薦'); return false;"
-                    style="color:red; font-weight: bold;font-size: 20px;">熱門推薦</a>
-                <a href="#" onclick="openAboutModal(); return false;"
-                    style="color: orange; font-size: 20px; font-weight: bold; text-decoration: none;">關於我們</a>
+                <a href="#" onclick="filterCategory('熱門推薦'); toggleMenu(); return false;"
+                    style="color:red; font-weight: bold;">熱門推薦</a>
+                <a href="#" onclick="openAboutModal(); toggleMenu(); return false;"
+                    style="color: orange; font-weight: bold;">關於我們</a>
             </div>
 
             <div class="user-controls">
@@ -41,7 +47,7 @@
                         style="display:none;">購買紀錄</a>
                     <a href="#" id="logoutBtn" onclick="handleLogout()" style="display: none;">登出</a>
                 </div>
-                <div class="cart-icon" onclick="openCart()">
+                <div class="cart-icon" onclick="openCart(); toggleMenu();">
                     🛒 <span class="cart-count">0</span>
                 </div>
             </div>
@@ -102,28 +108,34 @@
     </footer>
 
     <div id="cart-modal" class="cart-modal" style="display:none;">
+        <div class="modal-overlay" onclick="closeCart()"></div>
+
         <div class="cart-content">
             <h2>您的購物車</h2>
             <ul id="cart-items-list"></ul>
-
             <div class="cart-footer">
-                <div id="cart-total" class="cart-total">
-                    總計：$ 0
-                </div>
-
+                <div id="cart-total" class="cart-total">總計：$ 0</div>
                 <hr>
-
                 <div class="cart-buttons">
-                    <button class="checkout-btn" onclick="checkout()">
-                        前往結帳
-                    </button>
-                    <button class="close-cart-btn" onclick="closeCart()">
-                        關閉
-                    </button>
+                    <button class="checkout-btn" onclick="checkout()">前往結帳</button>
+                    <button class="close-cart-btn" onclick="closeCart()">關閉</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div id="product-detail-modal" class="cart-modal" style="display:none;">
+        <div class="modal-overlay" onclick="closeProductDetail()"></div>
+        <div class="cart-content"
+            style="max-width: 700px; width: 90%; height: auto; max-height: 90vh; overflow-y: auto;">
+            <span class="close-btn" onclick="closeProductDetail()"
+                style="position: absolute; right: 20px; top: 10px; cursor: pointer; font-size: 28px;">&times;</span>
+            <div id="detail-content" class="row" style="padding: 20px; margin-top: 20px;">
+            </div>
+        </div>
+    </div>
+
+
     <script type="module" src="JavaScript.js"></script>
     <!-- 登入/註冊彈出視窗 -->
     <div id="authModal" class="modal">
