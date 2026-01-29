@@ -38,6 +38,8 @@ body {
     gap: 10px;
     z-index: 2001;
     white-space: nowrap;
+    /* 確保這塊區域不會擋住下層或旁邊的點擊 */
+    pointer-events: auto;
 }
 
 .nav-links a {
@@ -49,15 +51,26 @@ body {
 
 /* 右側會員區塊 */
 .user-controls {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    display: flex !important;
+    flex-direction: column !important;
+    /* 關鍵：強制垂直分兩行 */
+    align-items: flex-end !important;
+    /* 靠右對齊 */
+    justify-content: center !important;
+    gap: 4px !important;
+    padding-right: 10px;
 }
 
 .auth-buttons a {
     text-decoration: none;
     color: #007bff;
     font-size: 20px;
+}
+
+.auth-buttons {
+    position: relative;
+    z-index: 1000;
+    /* 確保它在最上層，不會被蓋住 */
 }
 
 .cart-icon {
@@ -306,7 +319,7 @@ footer p {
 .modal {
     display: none;
     position: fixed;
-    z-index: 10005;
+    z-index: 30000 !important;
     left: 0;
     top: 0;
     width: 100%;
@@ -440,7 +453,7 @@ footer p {
 }
 
 .swal2-container {
-    z-index: 20000 !important;
+    z-index: 30001 !important;
 }
 
 /* 關鍵修正：縮小商品名稱字體 */
@@ -632,13 +645,17 @@ footer p {
 /* 響應式調整：手機上看時全部居中 */
 @media (max-width: 768px) {
 
-    /* 1. 導覽列：確保三者垂直置中並撐開 */
+    /* 1. 調整導覽列高度，改為自動撐開 */
     .navbar {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
-        height: 60px;
-        padding: 0 10px;
+        min-height: 60px;
+        /* 改用最小高度 */
+        height: auto !important;
+        /* 讓內容(兩行文字)撐開高度 */
+        padding: 5px 10px;
+        /* 縮小一點上下內距，避免太厚 */
     }
 
     /* 2. 左側 Logo：固定在左邊 */
@@ -677,7 +694,8 @@ footer p {
     .nav-links {
         display: none;
         position: absolute;
-        top: 60px;
+        top: 100%;
+        /* 改用 100% 確保接在 navbar 下方 */
         left: 0;
         width: 100%;
         background-color: rgba(255, 255, 255, 0.98);
@@ -711,11 +729,16 @@ footer p {
         display: flex;
     }
 
-    /* 5. 會員與購物車：緊湊排列 */
+    /* 1. 讓右側容器變成垂直排列，避免橫向擠壓 */
     .user-controls {
         display: flex !important;
-        flex-direction: row !important;
-        gap: 8px !important;
+        flex-direction: column !important;
+        /* 關鍵：強制垂直分兩行 */
+        align-items: flex-end !important;
+        /* 靠右對齊 */
+        justify-content: center !important;
+        gap: 4px !important;
+        padding-right: 10px;
     }
 
     .auth-buttons {
@@ -724,16 +747,24 @@ footer p {
         gap: 5px;
     }
 
-    /* 讓文字更緊湊，避免擠到漢堡選單 */
+    /* 4. 針對按鈕文字微調，增加點擊空間 */
     .auth-buttons a,
     .user-controls a {
-        font-size: 12px !important;
-        white-space: nowrap;
+        font-size: 14px !important;
+        text-decoration: none;
+        padding: 4px 0;
     }
 
-    /* 隱藏沒必要的歡迎詞，留空間給按鈕 */
+    /* 2. 處理歡迎文字：將它移到上方，並縮小字體 */
     .user-welcome {
-        display: none !important;
+        display: block !important;
+        /* 確保它有顯示 */
+        font-size: 13px !important;
+        margin: 0 !important;
+        white-space: nowrap;
+        /* 防止名字斷行 */
+        color: #ffcc00 !important;
+        /* 保持黃色 */
     }
 
     /* 4. 漢堡選單：強制移到最右邊 */
@@ -815,7 +846,43 @@ footer p {
         /* 增加平滑過渡感 */
     }
 
+    /* 3. 處理下方的功能按鈕（購買紀錄、登出、購物車） */
+    .auth-buttons,
+    .user-controls>div:last-child {
+        display: flex !important;
+        flex-direction: row !important;
+        /* 讓按鈕橫向排開 */
+        gap: 12px !important;
+        align-items: center;
+    }
 
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    body {
+        padding-top: 30px !important; /* 增加這個值，把內容往下推 */
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+        /* 允許換行 */
+        height: auto !important;
+        padding: 10px 20px;
+    }
+
+    .nav-right {
+        flex-direction: column;
+        /* 讓內容垂直分兩層 */
+        align-items: flex-end;
+        gap: 5px;
+    }
+
+    .user-welcome {
+        display: block !important;
+        font-size: 14px;
+        order: -1;
+        /* 強制讓名字排在最上面 */
+    }
 }
 
 /* 446-457 商品logo調整 */

@@ -8,6 +8,7 @@ import { getFirestore, doc, getDoc, setDoc, collection, addDoc, query, where, ge
 let db, auth;
 let isLoginMode = true;
 let cart = [];
+let authModal;
 
 const colorMap = {
     "曜石黑": "black", "極致灰": "gray", "軍綠色": "green",
@@ -76,42 +77,66 @@ baseTemplates.forEach((template) => {
     });
 });
 
+// 統一掛載全域函式 (解決 JS Module 無法被 HTML onclick 存取的問題)
+window.openAuthModal = () => {
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'block';
+};
+
+window.closeAuthModal = () => {
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'none';
+};
+
 // ==========================================
 // 2. 初始化 App
 // ==========================================
 async function startApp() {
+    // 預先抓取 UI 元素
+    const loginBtn = document.querySelector(".login-register-btn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const historyBtn = document.getElementById("historyBtn");
+
+    // 初始化 UI 狀態
     filterCategory('全部');
+
     try {
         const res = await fetch('/api/config');
+        if (!res.ok) throw new Error("API 配置讀取失敗");
+        
         const config = await res.json();
         const app = initializeApp(config);
         db = getFirestore(app);
         auth = getAuth(app);
 
+        // 監聽登入狀態
         onAuthStateChanged(auth, async (user) => {
-            const loginBtn = document.querySelector(".login-register-btn");
-            const logoutBtn = document.getElementById("logoutBtn");
-            const historyBtn = document.getElementById("historyBtn");
-
             if (user) {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
                     const userData = userDoc.data();
                     updateAuthUI(userData.name, userData.gender);
-                    if (historyBtn) historyBtn.style.display = "inline";
-                    if (logoutBtn) logoutBtn.style.display = "inline";
                 }
+                if (historyBtn) historyBtn.style.display = "inline";
+                if (logoutBtn) logoutBtn.style.display = "inline";
             } else {
                 if (loginBtn) {
-                    loginBtn.innerText = "登入/註冊";
+                    loginBtn.innerHTML = "登入/註冊";
                     loginBtn.style.pointerEvents = "auto";
+                    // 確保未登入時點擊能開啟
+                    loginBtn.onclick = (e) => {
+                        e.preventDefault();
+                        window.openAuthModal();
+                    };
                 }
                 if (historyBtn) historyBtn.style.display = "none";
                 if (logoutBtn) logoutBtn.style.display = "none";
             }
         });
+
     } catch (err) {
         console.error("Firebase 初始化失敗:", err);
+        // 即使 Firebase 失敗，也讓基礎功能可用
     }
 }
 
@@ -286,6 +311,9 @@ window.removeFromCart = (index) => { cart.splice(index, 1); updateCartUI(); };
 window.openCart = () => { document.getElementById('cart-modal').style.display = 'block'; };
 window.closeCart = () => { document.getElementById('cart-modal').style.display = 'none'; };
 
+
+
+
 // ==========================================
 // 5. 會員與購買紀錄
 // ==========================================
@@ -293,6 +321,7 @@ function updateAuthUI(name, gender) {
     const loginBtn = document.querySelector(".login-register-btn");
     if (loginBtn) {
         loginBtn.innerHTML = `<span class="user-welcome">您好，${name}${gender}</span>`;
+        // 如果你想讓使用者點擊名字可以看個人資料，就不要設 none
         loginBtn.style.pointerEvents = "none";
     }
     const logoutBtn = document.getElementById("logoutBtn");
@@ -311,19 +340,46 @@ document.getElementById('authForm').onsubmit = async (e) => {
     e.preventDefault();
     const email = document.getElementById("authEmail").value;
     const password = document.getElementById("authPassword").value;
+    
     try {
         if (isLoginMode) {
+            // 執行登入
             await signInWithEmailAndPassword(auth, email, password);
+            
+            // 成功後跳轉通知
+            await Swal.fire({
+                icon: 'success',
+                title: '登入成功',
+                text: '歡迎回來！',
+                timer: 1500,
+                showConfirmButton: false
+            });
         } else {
+            // 執行註冊
             const name = document.getElementById("userName").value;
             const gender = document.getElementById("userGender").value;
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await setDoc(doc(db, "users", userCredential.user.uid), { name, gender, email });
-            alert("註冊成功！");
+            
+            await Swal.fire({
+                icon: 'success',
+                title: '註冊成功',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
-        authModal.style.display = "none";
+        
+        // 成功後關閉彈窗 (使用我們定義好的安全函式)
+        window.closeAuthModal();
+        
     } catch (error) {
-        alert("驗證失敗: " + error.message);
+        console.error("驗證過程出錯:", error);
+        // 這邊才是真正的失敗通知
+        Swal.fire({
+            icon: 'error',
+            title: '驗證失敗',
+            text: error.message
+        });
     }
 };
 
@@ -425,11 +481,11 @@ window.openAboutModal = () => {
     });
 };
 
-// 全域 Esc 關閉彈窗
+// 修正 5：在所有 window 事件監聽中加入安全檢查
 window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        closeCart();
-        closeProductDetail();
+        if (typeof closeCart === 'function') closeCart();
+        if (typeof closeProductDetail === 'function') closeProductDetail();
         if (authModal) authModal.style.display = 'none';
     }
 });
@@ -454,7 +510,7 @@ window.toggleMenu = (e) => {
 document.addEventListener('click', (e) => {
     const navLinks = document.querySelector('.nav-links');
     const menuToggle = document.querySelector('.menu-toggle');
-    
+
     // 如果點擊的地方不是選單本身，也不是漢堡按鈕，就關閉
     if (navLinks && navLinks.classList.contains('active')) {
         if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
@@ -463,4 +519,20 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// 修正：表單切換按鈕的事件綁定
+// 由於這個按鈕在 HTML 裡沒寫 onclick，我們要在 JS 裡確保抓得到它
+document.addEventListener('DOMContentLoaded', () => {
+    const switchBtn = document.getElementById("switchModeBtn");
+    if (switchBtn) {
+        switchBtn.onclick = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById("modalTitle").innerText = isLoginMode ? "會員登入" : "帳號申請";
+            document.getElementById("mainAuthBtn").innerText = isLoginMode ? "登入" : "註冊";
+            document.getElementById("userInfoFields").style.display = isLoginMode ? "none" : "block";
+            switchBtn.innerText = isLoginMode ? "帳號申請" : "立即登入";
+        };
+    }
+});
+
 startApp();
