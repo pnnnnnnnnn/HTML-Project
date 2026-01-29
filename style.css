@@ -8,53 +8,43 @@
 body {
     display: flex;
     flex-direction: column;
-    /* 讓內容由上往下排：Header -> Content -> Footer */
+    padding-top: 10px;
+    /* 預留給 Announcement(35px) + Navbar(70px) */
 }
 
-/* 導覽列排版 */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 5%;
-
-    /* --- 關鍵修正：確保不透明且有背景色 --- */
-    background-color: #ffffff !important;
-    /* 強制純白背景 */
-    opacity: 1 !important;
-    /* 強制不透明度為 100% */
+    background-color: #ffffff;
+    opacity: 1;
     z-index: 5000;
-    /* 確保層級高於商品卡片 (2000) */
-
     position: fixed;
     left: 0;
     width: 100%;
     height: 70px;
-    top: 35px !important;
+    top: 35px;
+    /* 剛好接在公告欄下方 */
 }
 
-/* --- 修改中間選單：使用絕對定位達成真正置中 --- */
 .nav-links {
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    /* 核心魔法：強制定位於螢幕正中心 */
-    align-items: center;
     display: flex;
+    align-items: center;
     gap: 10px;
-    /* 調整連結之間的間距 */
     z-index: 2001;
-    /* 確保選單在最上層 */
     white-space: nowrap;
-    /* 強制文字不換行，防止擠壓變形 */
 }
 
 .nav-links a {
-    /* 移除原本的 margin 15px，改用父層的 gap 控制 */
     text-decoration: none;
     transition: 0.3s;
     font-size: 1.3rem;
+    color: #333;
 }
 
 /* 右側會員區塊 */
@@ -77,33 +67,30 @@ body {
 
 /* 商品區塊排版 */
 .product-container {
-    /* 移除 flex: 1，改用 min-height */
+    flex: 1;
     min-height: 600px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
-    padding: 5px 5% 20px 5%;
+    padding: 5px 0 20px 0;
 }
 
-/* 1. 商品卡片本體：維持純白 */
+/* 1. 商品卡片本體*/
 .product-card {
-    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #ffffff;
     border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    padding: 15px 15px 25px 15px;
     text-align: center;
-    padding: 15px;
-    padding-bottom: 25px;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff !important;
-    /* 最底層背景 */
-    border-radius: 8px;
-    height: 100%;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
     animation: productFadeIn 0.6s ease backwards;
 }
 
 .product-card:hover {
     transform: translateY(-5px);
-    /* 向上浮起 */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     border-color: #007bff;
 }
@@ -127,16 +114,15 @@ body {
     /* 圖片輕微放大 */
 }
 
+/* 圖片混和模式優化 */
 .product-card img {
     display: block;
     margin: 0 auto;
     max-width: 100%;
     height: auto;
-    /* 核心魔法：這會把圖片中的純白/透明部分與容器的純白融合，
-       網格色塊會因為與白色相乘而消失，只留下商品本身的色塊 */
     mix-blend-mode: multiply;
     filter: brightness(1.02);
-    /* 稍微調亮一點點，讓白色背景更乾淨 */
+    transition: transform 0.5s;
 }
 
 footer {
@@ -162,7 +148,6 @@ footer p {
 /* 購物車背景遮罩 */
 .cart-modal {
     display: flex;
-    /* 預設隱藏 */
     position: fixed;
     top: 0;
     right: 0;
@@ -173,8 +158,6 @@ footer p {
     z-index: 9999;
     padding: 20px;
     flex-direction: column;
-    /* 設為極高，確保在所有商品卡片與導覽列之上 */
-
 }
 
 .cart-modal h2 {
@@ -299,7 +282,6 @@ footer p {
     /* 讓選單跟商品保持距離 */
 }
 
-/* 確保側邊欄連結不換行 */
 .sidebar ul li a {
     padding: 12px 15px;
     border-radius: 8px;
@@ -307,6 +289,9 @@ footer p {
     display: flex;
     align-items: center;
     gap: 10px;
+    text-decoration: none;
+    color: #333;
+    transition: 0.3s;
 }
 
 .sidebar ul li a:hover {
@@ -327,9 +312,7 @@ footer p {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.4);
-    /* 稍微淡一點的黑色遮罩 */
     backdrop-filter: blur(4px);
-    /* 背景微模糊，更有質感 */
 }
 
 /* 2. 視窗本體：改為更圓潤、帶有呼吸感的陰影 */
@@ -593,7 +576,7 @@ footer p {
 
 /* 中間欄位文字居中 */
 .brand-info {
-    text-align: center;
+    text-align: left;
     flex: 1.5;
     /* 讓中間區塊寬一點 */
 }
@@ -649,24 +632,29 @@ footer p {
 /* 響應式調整：手機上看時全部居中 */
 @media (max-width: 768px) {
 
-    /* 1. 導覽列：保持水平排列，不換行 */
+    /* 1. 導覽列：確保三者垂直置中並撐開 */
     .navbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
         height: 60px;
+        padding: 0 10px;
     }
 
-    /* 2. 左側：Logo 縮小一點以騰出空間 */
+    /* 2. 左側 Logo：固定在左邊 */
     .nav-left {
-        width: auto !important;
-        /* 取消 100% */
-        margin-bottom: 0 !important;
-        gap: 5px;
+        flex: 0 0 auto;
+        /* 不要伸縮 */
+        display: flex;
+        align-items: center;
     }
 
     .logo-img {
-        height: 35px !important;
+        height: 35px;
+        /* 手機版縮小高度 */
+        width: auto;
+        /* 關鍵：維持比例 */
+        /* 不要加 !important，除非有其他框架強制覆蓋它 */
     }
 
     .nav-left span {
@@ -674,29 +662,30 @@ footer p {
         /* 文字縮小 */
     }
 
-    /* 3. 中間與右側容器：全部排成一行 */
+    /* 3. 右側容器：現在改為「中間容器」，放購買紀錄等 */
     .nav-right {
+        flex: 1;
+        /* 佔據剩餘空間 */
         display: flex;
+        justify-content: center;
+        /* 讓內部的文字置中 */
         align-items: center;
-        gap: 10px;
+        gap: 8px;
     }
 
     /* 1. 選單容器：確保它寬度正確，且有背景色 */
     .nav-links {
         display: none;
-        /* 預設隱藏 */
-        position: absolute !important;
-        top: 60px !important;
-        /* 剛好在 Navbar 下方 */
-        left: 0 !important;
-        width: 100% !important;
-        background-color: rgba(255, 255, 255, 0.98) !important;
-        /* 白色背景 */
-        flex-direction: column !important;
-        padding: 10px 0 !important;
-        /* 縮小上下內距 */
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.98);
+        flex-direction: column;
+        transform: none;
+        /* 移除電腦版的居中 transform */
+        padding: 10px 0;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        z-index: 10000;
     }
 
     /* 2. 選單內的連結：縮小字體，置中對齊 */
@@ -735,9 +724,10 @@ footer p {
         gap: 5px;
     }
 
+    /* 讓文字更緊湊，避免擠到漢堡選單 */
     .auth-buttons a,
     .user-controls a {
-        font-size: 13px !important;
+        font-size: 12px !important;
         white-space: nowrap;
     }
 
@@ -746,10 +736,15 @@ footer p {
         display: none !important;
     }
 
-/* 確保按鈕顯示 */
+    /* 4. 漢堡選單：強制移到最右邊 */
     .menu-toggle {
-        display: flex !important; /* 這裡使用一次確保覆蓋預設的 none */
-        order: 10; /* 讓它排在導覽列最後面 */
+        flex: 0 0 auto;
+        /* 不要伸縮 */
+        display: flex !important;
+        order: 3;
+        /* 確保它在 Flex 最後面 */
+        margin-left: 10px;
+        /* 與中間文字拉開一點距離 */
     }
 
     .menu-toggle .bar {
@@ -760,19 +755,25 @@ footer p {
 
     /* 4. 解決標題太長、間距太大的問題 */
     body {
-        padding-top: 10px !important;
-        /* 跑馬燈 35 + Navbar 60 + 緩衝 5 */
+        padding-top: 10px;
     }
 
     .sidebar {
-        width: 100% !important;
-        position: static !important;
-        margin-bottom: 15px;
+        position: relative;
+        /* 取消 sticky 或 absolute */
+        width: 100%;
+        margin-bottom: 20px;
+        float: none;
+        /* 預防有舊的浮動 */
+        display: block;
     }
 
+    /* 確保容器寬度正確 */
     .main-content {
-        flex-direction: column;
-        padding: 0 10px !important;
+        display: block;
+        /* 在手機版用 block 比 flex 更不容易出錯 */
+        width: 100%;
+        padding: 0 10px;
     }
 
     #category-title {
@@ -792,6 +793,29 @@ footer p {
         padding-top: 10px !important;
         /* 縮小內部間距 */
     }
+
+    /* 確保商品列表不會往上衝 */
+    .product-grid,
+    .product-list {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        /* 兩個一排 */
+        gap: 15px;
+        clear: both;
+        /* 清除可能存在的浮動影響 */
+    }
+
+    .nav-links a:hover {
+        background-color: #f8f9fa !important;
+        /* 淺灰色背景 */
+        color: #ff4d4f !important;
+        /* 轉為紅色或你的主色調 */
+        transition: all 0.3s ease;
+        /* 增加平滑過渡感 */
+    }
+
+
 }
 
 /* 446-457 商品logo調整 */
@@ -804,10 +828,16 @@ footer p {
     font-weight: bold;
 }
 
+/* 找到你原本的 .logo-img 區塊並修改 */
 .logo-img {
     height: 70px;
-    /* 調整圖片高度以符合標題列 */
+    /* 這是你電腦版的高度 */
     width: auto;
+    /* 關鍵：讓寬度根據比例自動縮放，不被壓扁 */
+    display: block;
+    /* 移除圖片下方微小間隙 */
+    object-fit: contain;
+    /* 確保圖片內容完整顯示 */
 }
 
 /* 1. 修正標題區塊的間距 */
@@ -832,7 +862,6 @@ section {
     line-height: 1.1;
 }
 
-/* 當分類被選中時 (Active) */
 .sidebar ul li a.active {
     background: #f0f7ff;
     color: #007bff;
@@ -896,7 +925,6 @@ section {
     from {
         opacity: 0;
         transform: translateY(30px);
-        /* 從下方 30px 處升起 */
     }
 
     to {
@@ -1102,11 +1130,11 @@ section {
     animation-delay: 0.6s;
 }
 
-/*底下都是跑馬燈設定*/
-/* 1. 公告欄容器 */
+/* ==========================================================================
+   2. 導覽列與公告欄 (Fixed Elements)
+   ========================================================================== */
 .announcement-bar {
     background: linear-gradient(90deg, #ff4d4d, #f0932b, #ff4d4d);
-    /* 慶典漸層色 */
     background-size: 200% auto;
     color: white;
     height: 35px;
@@ -1117,8 +1145,8 @@ section {
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 3000;
-    /* 層級最高，確保不被蓋住 */
+    z-index: 5001;
+    /* 比 Navbar 高 */
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -1149,19 +1177,24 @@ section {
     }
 }
 
-/* 3. 修正主內容區塊的間距 */
 .main-content {
-    /* 原本是 105px 甚至更高，現在因為上面有標題了，
-       我們把 margin-top 設為 0，讓它緊貼標題 */
-    margin-top: 0px !important;
-    padding: 0px 1% 0px 5%;
-    /* 保持原本的左右 padding */
     display: flex;
+    padding: 0 1% 0 5%;
+    margin-top: 0;
 }
 
-/* 修正側邊欄位置 */
 .sidebar {
-    top: 125px !important;
+    flex: 0 0 180px;
+    background: #ffffff;
+    padding: 25px 15px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    position: sticky;
+    top: 125px;
+    /* Navbar(70) + Announcement(35) + 緩衝(20) */
+    height: fit-content;
+    align-self: flex-start;
+    margin-right: 20px;
 }
 
 /* ==========================================================================
@@ -1329,17 +1362,20 @@ section {
 
 /* --- 漢堡按鈕基礎樣式：放在 media query 之外 --- */
 .menu-toggle {
-    display: none; /* 電腦版預設隱藏 */
+    display: none;
+    /* 電腦版預設隱藏 */
     flex-direction: column;
     cursor: pointer;
     gap: 6px;
     padding: 10px;
-    z-index: 10001; /* 確保在所有選單之上 */
+    z-index: 10001;
+    /* 確保在所有選單之上 */
 }
 
 .menu-toggle .bar {
     width: 30px;
     height: 3px;
-    background-color: #333; /* 確保顏色與背景有對比 */
+    background-color: #333;
+    /* 確保顏色與背景有對比 */
     transition: 0.3s;
 }
